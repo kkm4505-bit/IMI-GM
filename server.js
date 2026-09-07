@@ -10,7 +10,10 @@ const PORT = process.env.PORT || 3000;
 const MASTER_PASSWORD = "4505";
 
 const DATA_DIR = path.join(__dirname, "data");
-const UPLOAD_DIR = path.join(__dirname, "uploads");
+// 업로드 파일도 data 폴더 안의 하위 폴더에 저장한다 — 그러면 Volume을
+// /app/data 딱 하나만 연결해도 게시글 DB와 첨부파일이 함께 보존된다
+// (Railway에서 볼륨을 2개 만들기 번거로운 경우를 위한 구성).
+const UPLOAD_DIR = path.join(DATA_DIR, "uploads");
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
@@ -152,3 +155,4 @@ app.delete("/api/posts/:id", function (req, res) {
 app.listen(PORT, function () {
   console.log("GM 인사이트 게시판 서버가 " + PORT + "번 포트에서 실행 중입니다.");
 });
+
