@@ -451,7 +451,6 @@
             '<td class="col-type">' + typeTagHtml(p.type) + '</td>' +
             '<td><span class="title-cell" data-action="view" data-id="' + p.id + '">' +
               '<span class="title-text">' + escapeHtml(p.title) + '</span>' +
-              (p.updatedAt ? '<span class="edited-flag">(수정됨)</span>' : '') +
             '</span></td>' +
             '<td class="col-writer">' + escapeHtml(p.writer) + '</td>' +
             '<td class="col-date">' + fmtDateTime(p.createdAt) + '</td>' +
@@ -601,7 +600,6 @@
             '<span>게시자 <b>' + escapeHtml(p.writer) + '</b></span>' +
             '<span>게임명 <b>' + escapeHtml(p.gameName||"-") + '</b></span>' +
             '<span>등록 <b>' + fmtDate(p.createdAt) + '</b></span>' +
-            (p.updatedAt ? '<span>수정 <b>' + fmtDateTime(p.updatedAt) + '</b></span>' : '') +
           '</div>' +
           '<div class="detail-actions">' +
             '<button class="btn btn-ghost" data-action="cancel-form">← 목록으로</button>' +
@@ -882,6 +880,19 @@
     if(selectedImg) selectedImg.classList.remove("img-selected");
     selectedImg = null;
     if(resizeOverlay){ resizeOverlay.remove(); resizeOverlay = null; }
+  }
+
+  function deleteSelectedImage(){
+    if(!selectedImg || !quillInstance) return;
+    var blot = window.Quill && Quill.find ? Quill.find(selectedImg, true) : null;
+    if(blot){
+      var index = quillInstance.getIndex(blot);
+      quillInstance.deleteText(index, 1, "user");
+    } else if(selectedImg.parentNode){
+      // 혹시 Quill이 해당 노드를 못 찾는 경우를 대비한 대체 경로
+      selectedImg.parentNode.removeChild(selectedImg);
+    }
+    clearImageSelection();
   }
 
   function repositionResizeOverlay(){
@@ -1231,6 +1242,18 @@
     var cw = document.getElementById("composeWrap");
     if(!cw) return;
     if(!cw.contains(e.target)) clearImageSelection();
+  });
+
+  document.addEventListener("keydown", function(e){
+    if(!selectedImg) return;
+    // 이미지가 선택된 상태에서만 동작 — 다른 입력창에서 Delete/Backspace를 누르는 것과
+    // 겹치지 않도록, 이미지가 클릭으로 선택되어 있을 때만 삭제를 수행한다.
+    if(e.key === "Delete" || e.key === "Backspace"){
+      e.preventDefault();
+      deleteSelectedImage();
+    } else if(e.key === "Escape"){
+      clearImageSelection();
+    }
   });
 
   /* ---------------- init ---------------- */
