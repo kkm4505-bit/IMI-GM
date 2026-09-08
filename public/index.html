@@ -262,6 +262,93 @@
   }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(-4px); }
 
+  /* ---- 목록 필터 바 ---- */
+  .list-toolbar{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
+  .filter-bar{ display:flex; flex-wrap:wrap; gap:8px; }
+  .filter-bar select{
+    width:auto; padding:8px 30px 8px 14px; font-size:13px; font-weight:600;
+    background: var(--panel); border:1px solid var(--border); border-radius:999px; color:var(--text-dim);
+    cursor:pointer; appearance:none; -webkit-appearance:none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239aa1b3'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position: right 12px center;
+  }
+  .filter-bar select:focus{ border-color: var(--gold-dim); }
+  .filter-bar select.active-filter{ border-color: rgba(232,182,84,0.5); color: var(--gold); background-color: var(--gold-bg); }
+
+  /* ---- 작성자 아바타 ---- */
+  .avatar{
+    display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
+    width:22px; height:22px; border-radius:50%; font-size:10.5px; font-weight:800; color:#fff;
+    margin-right:6px; vertical-align:middle; letter-spacing:0;
+  }
+  .avatar-lg{ width:30px; height:30px; font-size:12.5px; margin-right:8px; }
+  .writer-inline{ display:inline-flex; align-items:center; white-space:nowrap; }
+
+  /* ---- 상단 고정 강조 ---- */
+  tbody tr.pinned-row td{ background: rgba(232,182,84,0.055); }
+  tbody tr.pinned-row:hover td{ background: rgba(232,182,84,0.09); }
+  tbody tr.pinned-row td:first-child{ border-left: 3px solid var(--danger); }
+  tbody tr td:first-child{ border-left: 3px solid transparent; }
+  .pin-mark{ margin-right:4px; }
+  .comment-count{ font-size:11.5px; color:var(--text-faint); font-weight:600; margin-left:4px; }
+
+  th.col-views, td.col-views{ width:70px; text-align:center; }
+  th.col-likes, td.col-likes{ width:64px; text-align:center; }
+  td.col-views, td.col-likes{ color:var(--text-dim); font-variant-numeric: tabular-nums; font-size:13px; }
+
+  /* ---- 게시글 보기 상단 버튼 ---- */
+  .detail-top-actions{ margin-bottom:14px; }
+  .btn-back{ display:inline-flex; align-items:center; gap:6px; }
+
+  .btn-action{
+    display:inline-flex; align-items:center; gap:6px; border:none; border-radius:9px;
+    padding:8px 14px; font-size:12.5px; font-weight:700; cursor:pointer; font-family:inherit;
+    transition: transform .1s ease, box-shadow .15s ease, filter .15s ease;
+  }
+  .btn-action:hover{ transform: translateY(-1px); filter:brightness(1.07); }
+  .btn-action:active{ transform: translateY(0); }
+  .btn-pdf{ background: linear-gradient(150deg, #74add8 0%, #3f7ce0 100%); color:#fff; box-shadow: 0 5px 14px rgba(63,124,224,0.35); }
+  .btn-edit{ background: linear-gradient(150deg, #f3c876 0%, #dda746 100%); color:#241703; box-shadow: 0 5px 14px rgba(216,161,66,0.32); }
+  .btn-del{ background: linear-gradient(150deg, #f0937f 0%, #d9503a 100%); color:#2b0c05; box-shadow: 0 5px 14px rgba(217,80,58,0.32); }
+
+  /* ---- 추천(좋아요) ---- */
+  .like-wrap{ display:flex; justify-content:center; margin: 30px 0 4px; }
+  .like-btn{
+    display:inline-flex; align-items:center; gap:8px; padding:11px 24px; border-radius:999px;
+    border:1px solid var(--border); background: var(--panel); color:var(--text-dim); font-size:14.5px; font-weight:700;
+    cursor:pointer; transition: all .15s ease; font-family:inherit;
+  }
+  .like-btn:hover:not(:disabled){ border-color: var(--gold-dim); color:var(--text); transform: translateY(-1px); }
+  .like-btn.liked{ background: var(--gold-bg); border-color: rgba(232,182,84,0.45); color: var(--gold); }
+  .like-btn:disabled{ cursor:default; }
+  .like-btn .cnt{ font-variant-numeric: tabular-nums; }
+
+  /* ---- 댓글 ---- */
+  .comments-section{ margin-top:30px; padding-top:22px; border-top:1px solid var(--border-soft); }
+  .comments-title{ font-size:14px; font-weight:800; margin-bottom:14px; color:var(--text); }
+  .comments-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
+  .comment-item{
+    display:flex; align-items:flex-start; gap:10px; background: var(--bg-soft); border:1px solid var(--border);
+    border-radius:10px; padding:11px 13px;
+  }
+  .comment-item .c-content{ flex:1; font-size:13.5px; line-height:1.6; color:var(--text); overflow-wrap:anywhere; white-space:pre-wrap; }
+  .comment-item .c-meta{ display:flex; align-items:center; gap:10px; flex-shrink:0; margin-top:1px; }
+  .comment-item .c-time{ font-size:11.5px; color:var(--text-faint); white-space:nowrap; font-variant-numeric: tabular-nums; }
+  .comment-item .c-del{ background:transparent; border:none; color:var(--text-faint); cursor:pointer; font-size:14px; line-height:1; padding:2px 3px; }
+  .comment-item .c-del:hover{ color: var(--danger); }
+  .comment-empty{ color:var(--text-faint); font-size:13px; padding:16px 0; text-align:center; }
+  .comment-form{ display:flex; gap:8px; align-items:flex-start; }
+  .comment-form textarea{ flex:1; min-height:44px; max-height:120px; resize:vertical; }
+  .comment-form .c-pw{ width:74px; flex-shrink:0; letter-spacing:4px; }
+  .comment-form .btn{ flex-shrink:0; }
+
+  /* ---- 상단 고정 체크박스 ---- */
+  .field.full .title-row{ display:flex; align-items:flex-end; gap:12px; }
+  .field.full .title-row .field{ flex:1; }
+  .pin-checkbox-row{ display:flex; align-items:center; gap:6px; padding-bottom:10px; flex-shrink:0; white-space:nowrap; }
+  .pin-checkbox-row input[type=checkbox]{ width:16px; height:16px; accent-color: var(--gold); cursor:pointer; }
+  .pin-checkbox-row label{ font-size:12.5px; color:var(--text-dim); cursor:pointer; user-select:none; font-weight:600; }
+
   @media (max-width: 720px){ .field-grid{ grid-template-columns: 1fr; } }
   @media (max-width: 640px){
     .wrap{ padding:20px 14px 60px; }
@@ -274,6 +361,14 @@
     .title-cell{ max-width:100%; white-space:normal; font-size:15px; font-weight:600; margin:4px 0 2px; display:block; }
     td.col-writer, td.col-date{ display:inline-block; color:var(--text-faint); font-size:12.5px; }
     td.col-writer::after{ content:"·"; margin: 0 6px; color:var(--text-faint); }
+    td.col-views, td.col-likes{ display:inline-block; color:var(--text-faint); font-size:12.5px; }
+    td.col-views::before{ content:"조회 "; }
+    td.col-likes::before{ content:"· 추천 "; }
+    tbody tr.pinned-row{ border-left: 3px solid var(--danger); padding-left: 11px; }
+    tbody tr.pinned-row td:first-child{ border-left: none; }
+    .field.full .title-row{ flex-wrap:wrap; }
+    .comment-form{ flex-wrap:wrap; }
+    .comment-form .c-pw{ width:100%; }
   }
 </style>
 </head>
@@ -305,10 +400,37 @@
   }
   var PAGE_SIZE = 10;
 
+  var AVATAR_COLORS = ["#e8734f","#e0a83f","#5eb87a","#4fa3d9","#8f7fe8","#d76fae","#5fb0a8","#c98b4f"];
+  function avatarColorFor(name){
+    var str = String(name || "?");
+    var h = 0;
+    for(var i = 0; i < str.length; i++){ h = (h * 31 + str.charCodeAt(i)) >>> 0; }
+    return AVATAR_COLORS[h % AVATAR_COLORS.length];
+  }
+  function avatarHtml(name, big){
+    var initial = escapeHtml(String(name || "?").charAt(0));
+    var color = avatarColorFor(name);
+    return '<span class="avatar' + (big ? ' avatar-lg' : '') + '" style="background:' + color + ';">' + initial + '</span>';
+  }
+
+  var LIKED_POSTS_KEY = "gm_board_liked_posts";
+  function getLikedPostIds(){
+    try{ return JSON.parse(localStorage.getItem(LIKED_POSTS_KEY) || "[]"); }catch(e){ return []; }
+  }
+  function markPostLiked(id){
+    var liked = getLikedPostIds();
+    if(liked.indexOf(id) === -1){ liked.push(id); }
+    try{ localStorage.setItem(LIKED_POSTS_KEY, JSON.stringify(liked)); }catch(e){}
+  }
+
+  var DRAFT_KEY = "gm_board_draft";
+
   var state = {
     view: "list", page: 1, posts: [], loading: true,
     editingPost: null, detailPost: null,
-    pendingFiles: []      // {id, name, size, url}
+    pendingFiles: [],      // {id, name, size, url}
+    comments: [],
+    filters: { type: "", writer: "", gameName: "" }
   };
   var quillInstance = null;
   var selectedImg = null;
@@ -408,6 +530,33 @@
       return r.json();
     });
   }
+  function apiIncrementView(id){
+    return fetch("/api/posts/" + id + "/view", { method: "POST" }).then(function(r){ return r.json(); }).catch(function(){ return null; });
+  }
+  function apiLikePost(id){
+    return fetch("/api/posts/" + id + "/like", { method: "POST" }).then(function(r){
+      if(!r.ok) throw new Error("like failed");
+      return r.json();
+    });
+  }
+  function apiGetComments(postId){
+    return fetch("/api/posts/" + postId + "/comments").then(function(r){
+      if(!r.ok) throw new Error("load failed");
+      return r.json();
+    }).catch(function(){ return []; });
+  }
+  function apiAddComment(postId, content, password){
+    return fetch("/api/posts/" + postId + "/comments", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: content, password: password })
+    }).then(function(r){ if(!r.ok) throw new Error("save failed"); return r.json(); });
+  }
+  function apiDeleteComment(commentId, password){
+    return fetch("/api/comments/" + commentId, {
+      method: "DELETE", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: password })
+    });
+  }
 
   function refresh(){
     state.loading = true;
@@ -417,7 +566,11 @@
       // 저장된 값이 아니라 매번 다시 계산한다 (등록 순으로 오름차순 매긴 뒤 최신순으로 뒤집음).
       posts.sort(function(a,b){ return a.id - b.id; });
       posts.forEach(function(p, idx){ p.displayNo = idx + 1; });
-      posts.sort(function(a,b){ return b.id - a.id; });
+      // 화면에 보여줄 때는 상단 고정 글을 맨 앞에, 그 안에서는 최신순으로 표시한다.
+      posts.sort(function(a,b){
+        if(!!a.pinned !== !!b.pinned) return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0);
+        return b.id - a.id;
+      });
       state.posts = posts;
       state.loading = false;
       render();
@@ -431,29 +584,53 @@
 
   /* ---------------- rendering: list ---------------- */
 
+  function getDistinctGameNames(){
+    var set = {};
+    state.posts.forEach(function(p){ if(p.gameName) set[p.gameName] = true; });
+    return Object.keys(set).sort(function(a,b){ return a.localeCompare(b, "ko"); });
+  }
+
+  function applyFilters(posts){
+    var f = state.filters;
+    return posts.filter(function(p){
+      if(f.type && p.type !== f.type) return false;
+      if(f.writer && p.writer !== f.writer) return false;
+      if(f.gameName && p.gameName !== f.gameName) return false;
+      return true;
+    });
+  }
+
   function renderList(){
-    var total = state.posts.length;
+    var filtered = applyFilters(state.posts);
+    var total = filtered.length;
     var totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
     if(state.page > totalPages) state.page = totalPages;
     var start = (state.page - 1) * PAGE_SIZE;
-    var pagePosts = state.posts.slice(start, start + PAGE_SIZE);
+    var pagePosts = filtered.slice(start, start + PAGE_SIZE);
 
     var rowsHtml = "";
     if(state.loading){
-      rowsHtml = '<tr><td colspan="5"><div class="empty">불러오는 중…</div></td></tr>';
+      rowsHtml = '<tr><td colspan="7"><div class="empty">불러오는 중…</div></td></tr>';
     } else if(total === 0){
-      rowsHtml = '<tr><td colspan="5"><div class="empty"><b>등록된 게시글이 없습니다</b>오른쪽 위 \'게시글 등록\' 버튼으로 첫 인사이트를 등록해 보세요.</div></td></tr>';
+      var emptyMsg = state.posts.length === 0
+        ? '<b>등록된 게시글이 없습니다</b>오른쪽 위 \'게시글 등록\' 버튼으로 첫 인사이트를 등록해 보세요.'
+        : '<b>조건에 맞는 게시글이 없습니다</b>필터를 바꿔서 다시 확인해보세요.';
+      rowsHtml = '<tr><td colspan="7"><div class="empty">' + emptyMsg + '</div></td></tr>';
     } else {
       rowsHtml = pagePosts.map(function(p){
         return (
-          '<tr>' +
+          '<tr class="' + (p.pinned ? 'pinned-row' : '') + '">' +
             '<td class="col-no">' + p.displayNo + '</td>' +
             '<td class="col-type">' + typeTagHtml(p.type) + '</td>' +
             '<td><span class="title-cell" data-action="view" data-id="' + p.id + '">' +
+              (p.pinned ? '<span class="pin-mark">📌</span>' : '') +
               '<span class="title-text">' + escapeHtml(p.title) + '</span>' +
+              (p.commentCount ? '<span class="comment-count">(' + p.commentCount + ')</span>' : '') +
             '</span></td>' +
-            '<td class="col-writer">' + escapeHtml(p.writer) + '</td>' +
+            '<td class="col-writer"><span class="writer-inline">' + avatarHtml(p.writer) + escapeHtml(p.writer) + '</span></td>' +
+            '<td class="col-views">' + (p.views || 0) + '</td>' +
             '<td class="col-date">' + fmtDateTime(p.createdAt) + '</td>' +
+            '<td class="col-likes">' + (p.likes || 0) + '</td>' +
           '</tr>'
         );
       }).join("");
@@ -470,22 +647,34 @@
       pagerHtml = '<div class="pagination">' + btns + '</div>';
     }
 
+    function filterOpt(list, current){
+      return '<option value="">전체</option>' + list.map(function(v){
+        return '<option value="' + escapeHtml(v) + '" ' + (v === current ? 'selected' : '') + '>' + escapeHtml(v) + '</option>';
+      }).join("");
+    }
+    var gameNames = getDistinctGameNames();
+
     return (
       '<div class="topbar">' +
         '<div class="brand">' +
           '<div class="kicker"><span class="dot"></span>ITEMMANIA · GAME STRATEGY</div>' +
           '<h1>GM 인사이트 게시판</h1>' +
         '</div>' +
-        '<div class="count-pill">전체 <b>' + total + '</b>건</div>' +
+        '<div class="count-pill">전체 <b>' + state.posts.length + '</b>건</div>' +
       '</div>' +
-      '<div class="list-actions">' +
+      '<div class="list-toolbar">' +
+        '<div class="filter-bar">' +
+          '<select data-filter="type" class="' + (state.filters.type ? 'active-filter' : '') + '">' + filterOpt(REPORT_TYPES, state.filters.type) + '</select>' +
+          '<select data-filter="writer" class="' + (state.filters.writer ? 'active-filter' : '') + '">' + filterOpt(WRITERS, state.filters.writer) + '</select>' +
+          '<select data-filter="gameName" class="' + (state.filters.gameName ? 'active-filter' : '') + '">' + filterOpt(gameNames, state.filters.gameName) + '</select>' +
+        '</div>' +
         '<button class="btn-write" data-action="new">' +
           '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5V19M5 12H19" stroke="#241703" stroke-width="2.4" stroke-linecap="round"/></svg>' +
           '게시글 등록' +
         '</button>' +
       '</div>' +
       '<div class="board"><table>' +
-        '<thead><tr><th class="col-no">No</th><th class="col-type">종류</th><th>제목</th><th class="col-writer">게시자</th><th class="col-date">일시</th></tr></thead>' +
+        '<thead><tr><th class="col-no">No</th><th class="col-type">종류</th><th>제목</th><th class="col-writer">게시자</th><th class="col-views">조회수</th><th class="col-date">일시</th><th class="col-likes">추천</th></tr></thead>' +
         '<tbody>' + rowsHtml + '</tbody>' +
       '</table></div>' +
       pagerHtml
@@ -524,11 +713,19 @@
             '<div class="field"><label>게시자</label><select name="writer" required>' + opt(WRITERS, post.writer) + '</select></div>' +
             '<div class="field">' +
               '<label>비밀번호</label>' +
-              '<input class="pw-input" type="password" name="password" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="••••" value="' + (editing ? escapeHtml(post.password||"") : "") + '" />' +
+              '<input class="pw-input" type="password" name="password" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="••••" value="' + escapeHtml(post.password||"") + '" />' +
               '<div class="hint">숫자 4자리를 입력하세요 (수정 및 삭제 시 필요합니다)</div>' +
             '</div>' +
             '<div class="field"><label>게임명</label><input type="text" name="gameName" placeholder="예: 리니지M" value="' + escapeHtml(post.gameName||"") + '" /></div>' +
-            '<div class="field full"><label>제목</label><input type="text" name="title" placeholder="제목을 입력하세요" value="' + escapeHtml(post.title||"") + '" /></div>' +
+            '<div class="field full">' +
+              '<div class="title-row">' +
+                '<div class="field"><label>제목</label><input type="text" name="title" placeholder="제목을 입력하세요" value="' + escapeHtml(post.title||"") + '" /></div>' +
+                '<div class="pin-checkbox-row">' +
+                  '<input type="checkbox" id="pinnedCheckbox" name="pinned" ' + (post.pinned ? 'checked' : '') + ' />' +
+                  '<label for="pinnedCheckbox">상단 고정</label>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
           '</div>' +
 
           '<div class="section-label">내용</div>' +
@@ -572,6 +769,7 @@
           '</div>' +
 
           '<div class="form-footer">' +
+            '<button type="button" class="btn" data-action="save-draft">임시저장</button>' +
             '<button type="button" class="btn" data-action="cancel-form">취소</button>' +
             '<button type="submit" class="btn btn-gold">' + (editing ? "수정 완료" : "등록") + '</button>' +
           '</div>' +
@@ -592,26 +790,64 @@
       return '<a class="file-chip" href="' + f.url + '" download="' + escapeHtml(f.name) + '" target="_blank" rel="noopener"><span class="fname">📎 ' + escapeHtml(f.name) + '</span><span class="fsize">' + fmtSize(f.size||0) + '</span></a>';
     }).join("");
 
+    var liked = getLikedPostIds().indexOf(String(p.id)) !== -1;
+
+    var commentsHtml = "";
+    if(!state.comments || state.comments.length === 0){
+      commentsHtml = '<div class="comment-empty">아직 댓글이 없습니다. 첫 댓글을 남겨보세요.</div>';
+    } else {
+      commentsHtml = state.comments.map(function(c){
+        return (
+          '<div class="comment-item">' +
+            '<div class="c-content">' + escapeHtml(c.content) + '</div>' +
+            '<div class="c-meta">' +
+              '<span class="c-time">' + fmtDateTime(c.createdAt) + '</span>' +
+              '<button type="button" class="c-del" data-action="del-comment" data-id="' + c.id + '" title="댓글 삭제">✕</button>' +
+            '</div>' +
+          '</div>'
+        );
+      }).join("");
+    }
+
     return (
+      '<div class="detail-top-actions">' +
+        '<button class="btn btn-ghost btn-back" data-action="cancel-form">← 목록으로</button>' +
+      '</div>' +
       '<div class="panel">' +
         '<div class="form-header">' +
           '<div class="detail-meta-top">' +
             typeTagHtml(p.type) +
-            '<span>게시자 <b>' + escapeHtml(p.writer) + '</b></span>' +
+            '<span class="writer-inline">' + avatarHtml(p.writer) + '게시자 <b>&nbsp;' + escapeHtml(p.writer) + '</b></span>' +
             '<span>게임명 <b>' + escapeHtml(p.gameName||"-") + '</b></span>' +
             '<span>등록 <b>' + fmtDate(p.createdAt) + '</b></span>' +
+            '<span>조회 <b>' + (p.views || 0) + '</b></span>' +
           '</div>' +
           '<div class="detail-actions">' +
-            '<button class="btn btn-ghost" data-action="cancel-form">← 목록으로</button>' +
-            '<button class="btn btn-sm" data-action="pdf" data-id="' + p.id + '">PDF 다운로드</button>' +
-            '<button class="btn btn-sm" data-action="edit" data-id="' + p.id + '">수정</button>' +
-            '<button class="btn btn-sm btn-danger-ghost" data-action="delete" data-id="' + p.id + '">삭제</button>' +
+            '<button class="btn-action btn-pdf" data-action="pdf" data-id="' + p.id + '">🗂 PDF 다운로드</button>' +
+            '<button class="btn-action btn-edit" data-action="edit" data-id="' + p.id + '">✏️ 수정</button>' +
+            '<button class="btn-action btn-del" data-action="delete" data-id="' + p.id + '">🗑 삭제</button>' +
           '</div>' +
         '</div>' +
         '<div class="detail-title" id="pdfTitle">' + escapeHtml(p.title) + '</div>' +
         '<div class="detail-content" id="pdfContent">' + (p.content || "") + '</div>' +
         (imgsHtml ? '<div class="detail-images">' + imgsHtml + '</div>' : '') +
         (filesHtml ? '<div class="detail-files">' + filesHtml + '</div>' : '') +
+
+        '<div class="like-wrap">' +
+          '<button type="button" class="like-btn' + (liked ? ' liked' : '') + '" data-action="like" data-id="' + p.id + '" ' + (liked ? 'disabled' : '') + '>' +
+            '👍 <span class="cnt">' + (p.likes || 0) + '</span>' +
+          '</button>' +
+        '</div>' +
+
+        '<div class="comments-section">' +
+          '<div class="comments-title">댓글 ' + (state.comments ? state.comments.length : 0) + '</div>' +
+          '<div class="comments-list" id="commentsList">' + commentsHtml + '</div>' +
+          '<form id="commentForm" class="comment-form">' +
+            '<textarea name="content" placeholder="댓글을 입력하세요 (익명으로 등록됩니다)"></textarea>' +
+            '<input class="pw-input c-pw" type="password" name="password" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="••••" />' +
+            '<button type="submit" class="btn btn-gold">등록</button>' +
+          '</form>' +
+        '</div>' +
       '</div>'
     );
   }
@@ -959,6 +1195,40 @@
 
   /* ---------------- form submit ---------------- */
 
+  /* ---------------- 임시저장 ---------------- */
+
+  function saveDraft(){
+    var form = document.getElementById("postForm");
+    if(!form) return;
+    var fd = new FormData(form);
+    var pinnedEl = form.querySelector("#pinnedCheckbox");
+    var draft = {
+      type: (fd.get("type")||"").toString(),
+      writer: (fd.get("writer")||"").toString(),
+      password: (fd.get("password")||"").toString(),
+      gameName: (fd.get("gameName")||"").toString(),
+      title: (fd.get("title")||"").toString(),
+      pinned: !!(pinnedEl && pinnedEl.checked),
+      content: quillInstance ? quillInstance.root.innerHTML : "",
+      files: state.pendingFiles.filter(function(f){ return !f.uploading; }).map(function(f){ return { name: f.name, size: f.size, url: f.url }; }),
+      savedAt: new Date().toISOString()
+    };
+    try{
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      showToast("임시저장되었습니다.");
+    }catch(e){
+      showToast("임시저장에 실패했습니다.");
+    }
+  }
+
+  function loadDraft(){
+    try{
+      var raw = localStorage.getItem(DRAFT_KEY);
+      if(!raw) return null;
+      return JSON.parse(raw);
+    }catch(e){ return null; }
+  }
+
   function submitForm(e){
     e.preventDefault();
     var form = e.target;
@@ -968,6 +1238,8 @@
     var type = (fd.get("type")||"").toString().trim();
     var writer = (fd.get("writer")||"").toString().trim();
     var gameName = (fd.get("gameName")||"").toString().trim();
+    var pinnedEl = form.querySelector("#pinnedCheckbox");
+    var pinned = !!(pinnedEl && pinnedEl.checked);
     var contentHtml = quillInstance ? quillInstance.root.innerHTML.trim() : "";
     var contentText = quillInstance ? quillInstance.getText().trim() : "";
 
@@ -986,12 +1258,13 @@
 
     var payload = {
       type: type, writer: writer, password: password, gameName: gameName,
-      title: title, content: contentHtml, files: finalFiles
+      title: title, content: contentHtml, files: finalFiles, pinned: pinned
     };
 
     var savePromise = isEdit ? apiUpdatePost(state.editingPost.id, payload) : apiCreatePost(payload);
 
     savePromise.then(function(){
+      try{ localStorage.removeItem(DRAFT_KEY); }catch(ex){}
       state.view = "list";
       state.editingPost = null;
       state.pendingFiles = [];
@@ -1013,6 +1286,11 @@
     app.querySelectorAll("[data-action='new']").forEach(function(el){
       el.addEventListener("click", function(){
         state.view = "write"; state.editingPost = null; state.pendingFiles = [];
+        var draft = loadDraft();
+        if(draft){
+          state.editingPost = draft; // 임시저장 내용을 채워넣기 위해 write 화면에서도 post 형태로 재사용
+          state.pendingFiles = (draft.files || []).map(function(f){ return { id: uid(), name: f.name, size: f.size, url: f.url }; });
+        }
         render();
       });
     });
@@ -1024,11 +1302,37 @@
       });
     });
 
+    app.querySelectorAll("[data-filter]").forEach(function(el){
+      el.addEventListener("change", function(){
+        var key = el.getAttribute("data-filter");
+        state.filters[key] = el.value;
+        state.page = 1;
+        render();
+      });
+    });
+
     app.querySelectorAll("[data-action='view']").forEach(function(el){
       el.addEventListener("click", function(){
         var id = el.getAttribute("data-id");
         apiGetPost(id).then(function(post){
-          if(post && !post.error){ state.detailPost = post; state.view = "detail"; render(); }
+          if(post && !post.error){
+            state.detailPost = post;
+            state.comments = [];
+            state.view = "detail";
+            render();
+            apiIncrementView(id).then(function(res){
+              if(res && state.detailPost && state.detailPost.id == id){
+                state.detailPost.views = res.views;
+                render();
+              }
+            });
+            apiGetComments(id).then(function(comments){
+              if(state.detailPost && state.detailPost.id == id){
+                state.comments = comments;
+                render();
+              }
+            });
+          }
           else showToast("게시글을 불러오지 못했습니다.");
         }).catch(function(){ showToast("게시글을 불러오지 못했습니다."); });
       });
@@ -1102,6 +1406,71 @@
       });
     });
 
+    app.querySelectorAll("[data-action='like']").forEach(function(el){
+      el.addEventListener("click", function(){
+        var id = el.getAttribute("data-id");
+        if(getLikedPostIds().indexOf(String(id)) !== -1){ return; }
+        apiLikePost(id).then(function(res){
+          markPostLiked(String(id));
+          if(state.detailPost && state.detailPost.id == id){ state.detailPost.likes = res.likes; }
+          render();
+        }).catch(function(){ showToast("추천 처리 중 오류가 발생했습니다."); });
+      });
+    });
+
+    app.querySelectorAll("[data-action='save-draft']").forEach(function(el){
+      el.addEventListener("click", function(){ saveDraft(); });
+    });
+
+    var commentForm = document.getElementById("commentForm");
+    if(commentForm){
+      commentForm.addEventListener("submit", function(e){
+        e.preventDefault();
+        var fd = new FormData(commentForm);
+        var content = (fd.get("content")||"").toString().trim();
+        var password = (fd.get("password")||"").toString().trim();
+        if(!content){ showToast("댓글 내용을 입력해주세요."); return; }
+        if(!/^[0-9]{4}$/.test(password)){ showToast("비밀번호는 숫자 4자리로 입력해주세요."); return; }
+        if(!state.detailPost) return;
+        var submitBtn = commentForm.querySelector("button[type=submit]");
+        if(submitBtn) submitBtn.disabled = true;
+        apiAddComment(state.detailPost.id, content, password).then(function(){
+          return apiGetComments(state.detailPost.id);
+        }).then(function(comments){
+          state.comments = comments;
+          render();
+        }).catch(function(){
+          if(submitBtn) submitBtn.disabled = false;
+          showToast("댓글 등록 중 오류가 발생했습니다.");
+        });
+      });
+    }
+
+    app.querySelectorAll("[data-action='del-comment']").forEach(function(el){
+      el.addEventListener("click", function(){
+        var commentId = el.getAttribute("data-id");
+        openPasswordModal({
+          title: "댓글 비밀번호 확인",
+          subtitle: "이 댓글을 삭제하려면 등록 시 입력한 숫자 4자리 비밀번호를 입력하세요.",
+          onConfirm: function(val, close, setError){
+            apiDeleteComment(commentId, val).then(function(res){
+              if(res.ok){
+                close();
+                return apiGetComments(state.detailPost.id).then(function(comments){
+                  state.comments = comments;
+                  render();
+                });
+              } else if(res.status === 403){
+                setError("비밀번호가 일치하지 않습니다.");
+              } else {
+                setError("삭제 중 오류가 발생했습니다.");
+              }
+            }).catch(function(){ setError("삭제 중 오류가 발생했습니다."); });
+          }
+        });
+      });
+    });
+
     app.querySelectorAll("[data-action='cancel-form']").forEach(function(el){
       el.addEventListener("click", function(){
         state.view = "list"; state.editingPost = null; state.pendingFiles = [];
@@ -1172,7 +1541,7 @@
         if(el) el.setAttribute("title", pair[1]);
       });
 
-      if(state.view === "edit" && state.editingPost && state.editingPost.content){
+      if(state.editingPost && state.editingPost.content){
         quillInstance.clipboard.dangerouslyPasteHTML(state.editingPost.content);
       }
 
@@ -1264,3 +1633,4 @@
 </script>
 </body>
 </html>
+
