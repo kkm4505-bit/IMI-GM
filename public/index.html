@@ -1684,6 +1684,32 @@
         pendingDropIndex = null;
       });
 
+      // 클립보드에서 이미지를 복사해 붙여넣을 때도, Quill 기본 동작(내용에 base64로
+      // 그대로 박아넣기)이 아니라 툴바 버튼/드래그와 동일하게 서버에 업로드하고
+      // 그 주소를 삽입하도록 가로챈다. Quill 자체도 paste 리스너를 갖고 있어서
+      // 캡처 단계에서 먼저 가로채고 stopImmediatePropagation으로 중복 삽입을 막는다.
+      qroot.addEventListener("paste", function(e){
+        var items = (e.clipboardData && e.clipboardData.items) || [];
+        var imageItem = null;
+        for(var i = 0; i < items.length; i++){
+          if(items[i].type && items[i].type.indexOf("image/") === 0){ imageItem = items[i]; break; }
+        }
+        if(!imageItem) return; // 일반 텍스트 붙여넣기는 Quill 기본 동작에 맡긴다
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        var file = imageItem.getAsFile();
+        if(!file) return;
+        var range = quillInstance.getSelection(true);
+        var idx = range ? range.index : quillInstance.getLength();
+        var scrollX = window.scrollX, scrollY = window.scrollY;
+        apiUploadFile(file).then(function(res){
+          insertImageIntoQuill(quillInstance, idx, res.url);
+          window.scrollTo(scrollX, scrollY);
+        }).catch(function(){
+          showToast("이미지 업로드에 실패했습니다.");
+        });
+      }, true);
+
       qroot.addEventListener("click", function(e){
         if(e.target && e.target.tagName === "IMG"){
           selectImageForResize(e.target);
