@@ -383,37 +383,6 @@
 (function(){
   "use strict";
 
-  // Quill의 기본 이미지 블롯은 style/width/height 같은 속성을 변경 이력(델타)에 기록하지
-  // 않는다. 그래서 리사이즈한 뒤 Ctrl+Z를 누르면 그 변경을 추적할 수 없어 엉뚱하게
-  // 이미지 자체가 사라져버린다. style 속성을 정식 포맷으로 취급하도록 이미지 블롯을
-  // 확장 등록해서, 리사이즈도 일반적인 서식 변경처럼 실행취소가 되게 한다.
-  if(window.Quill){
-    try{
-      var BaseImageFormat = Quill.import("formats/image");
-      var IMAGE_FORMAT_ATTRS = ["alt", "height", "width", "style"];
-      function ResizableImageFormat(domNode){ BaseImageFormat.call(this, domNode); }
-      ResizableImageFormat.prototype = Object.create(BaseImageFormat.prototype);
-      ResizableImageFormat.prototype.constructor = ResizableImageFormat;
-      ResizableImageFormat.blotName = BaseImageFormat.blotName;
-      ResizableImageFormat.tagName = BaseImageFormat.tagName;
-      ResizableImageFormat.formats = function(domNode){
-        return IMAGE_FORMAT_ATTRS.reduce(function(formats, attr){
-          if(domNode.hasAttribute(attr)){ formats[attr] = domNode.getAttribute(attr); }
-          return formats;
-        }, {});
-      };
-      ResizableImageFormat.prototype.format = function(name, value){
-        if(IMAGE_FORMAT_ATTRS.indexOf(name) > -1){
-          if(value){ this.domNode.setAttribute(name, value); }
-          else{ this.domNode.removeAttribute(name); }
-        } else {
-          BaseImageFormat.prototype.format.call(this, name, value);
-        }
-      };
-      Quill.register(ResizableImageFormat, true);
-    }catch(e){ /* 등록 실패해도 나머지 기능은 그대로 동작하도록 무시 */ }
-  }
-
   var REPORT_TYPES = ["사이트 개선","게임 인사이트","마케팅 전략","경쟁사 분석","커뮤니티 여론","기타 제언"];
   var WRITERS = ["김경민","임대진","정민석","서해나","서예빈","윤보름","김광호","이해성","맹준용","박성욱","백취섭","김명우"];
   var TYPE_COLORS = {
@@ -1139,19 +1108,6 @@
 
   /* ---------------- 본문 이미지: 삽입 및 크기 조절 ---------------- */
 
-  function commitImageSizeToQuill(img){
-    // 리사이즈한 크기를 Quill의 델타(변경 이력)에도 기록해서, Ctrl+Z(실행취소)를
-    // 눌렀을 때 이미지가 통째로 사라지지 않고 리사이즈만 정상적으로 되돌아가게 한다.
-    if(!quillInstance || !window.Quill || !Quill.find) return;
-    var blot = Quill.find(img, true);
-    if(!blot) return;
-    var index = quillInstance.getIndex(blot);
-    var styleValue = "width:" + img.style.width + ";height:" + img.style.height + ";";
-    var scrollX = window.scrollX, scrollY = window.scrollY;
-    quillInstance.formatText(index, 1, "style", styleValue, "user");
-    window.scrollTo(scrollX, scrollY);
-  }
-
   function insertImageIntoQuill(quill, index, src){
     quill.insertEmbed(index, "image", src, "user");
     quill.setSelection(index + 1);
@@ -1162,7 +1118,6 @@
       if(imgs[i].getAttribute("src") === src && !imgs[i].style.width){
         imgs[i].style.width = "50%";
         imgs[i].style.height = "auto";
-        commitImageSizeToQuill(imgs[i]);
         break;
       }
     }
@@ -1244,9 +1199,6 @@
     function onUp(){
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseup", onUp);
-      // 드래그가 끝난 최종 크기만 Quill 델타에 한 번 기록 (매 픽셀마다 기록하면
-      // 실행취소가 너무 잘게 쪼개지므로 마우스를 뗀 시점에만 반영한다)
-      commitImageSizeToQuill(img);
     }
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseup", onUp);
