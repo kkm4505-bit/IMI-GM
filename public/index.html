@@ -296,7 +296,15 @@
 
   /* ---- 게시글 보기 상단 버튼 ---- */
   .detail-top-actions{ margin-bottom:14px; }
-  .btn-back{ display:inline-flex; align-items:center; gap:6px; }
+  .btn-back{
+    display:inline-flex; align-items:center; gap:6px; border:none; border-radius:9px;
+    padding:9px 16px; font-size:13px; font-weight:800; cursor:pointer; font-family:inherit;
+    background: linear-gradient(150deg, #7fd8c4 0%, #34a487 100%); color:#062018;
+    box-shadow: 0 5px 14px rgba(52,164,135,0.35);
+    transition: transform .1s ease, box-shadow .15s ease, filter .15s ease;
+  }
+  .btn-back:hover{ transform: translateY(-1px); filter:brightness(1.07); }
+  .btn-back:active{ transform: translateY(0); }
 
   .btn-action{
     display:inline-flex; align-items:center; gap:6px; border:none; border-radius:9px;
@@ -327,19 +335,28 @@
   .comments-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
   .comment-item{
     display:flex; align-items:center; gap:10px; background: var(--bg-soft); border:1px solid var(--border);
-    border-radius:10px; padding:11px 13px;
+    border-radius:10px; padding:11px 13px; cursor:pointer;
   }
-  .comment-item .c-author{ font-size:12.5px; font-weight:800; color: var(--gold); flex-shrink:0; }
+  .comment-item:hover{ border-color: var(--gold-dim); }
+  .comment-item .c-author{ font-size:12.5px; font-weight:800; color: var(--gold); flex-shrink:0; max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .comment-item .c-content{ flex:1; font-size:13.5px; line-height:1.6; color:var(--text); overflow-wrap:anywhere; white-space:pre-wrap; }
   .comment-item .c-meta{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
   .comment-item .c-time{ font-size:11.5px; color:var(--text-faint); white-space:nowrap; font-variant-numeric: tabular-nums; }
   .comment-item .c-del{ background:transparent; border:none; color:var(--text-faint); cursor:pointer; font-size:14px; line-height:1; padding:2px 3px; }
   .comment-item .c-del:hover{ color: var(--danger); }
   .comment-empty{ color:var(--text-faint); font-size:13px; padding:16px 0; text-align:center; }
+  .comment-replies{ display:flex; flex-direction:column; gap:8px; margin: 8px 0 0 26px; padding-left:14px; border-left:2px solid var(--border); }
   .comment-form{ display:flex; gap:8px; align-items:center; }
-  .comment-form input[type=text]{ flex:1; }
+  .comment-form input[name="content"]{ flex:1; }
   .comment-form .c-pw{ width:74px; flex-shrink:0; letter-spacing:4px; }
   .comment-form .btn{ flex-shrink:0; }
+  .nickname-wrap{ position:relative; flex:0 0 92px; }
+  .nickname-wrap .nickname-input{ width:100%; padding-right:26px; }
+  .nickname-wrap .nickname-clear{
+    position:absolute; right:6px; top:50%; transform:translateY(-50%);
+    background:transparent; border:none; color:var(--text-faint); cursor:pointer; font-size:12px; padding:2px;
+  }
+  .nickname-wrap .nickname-clear:hover{ color: var(--danger); }
 
   /* ---- 상단 고정 체크박스 ---- */
   .title-row{ display:flex; align-items:flex-end; gap:12px; }
@@ -368,6 +385,7 @@
     .title-row{ flex-wrap:wrap; }
     .comment-form{ flex-wrap:wrap; }
     .comment-form .c-pw{ width:100%; }
+    .nickname-wrap{ flex: 0 0 100%; }
   }
 </style>
 </head>
@@ -416,11 +434,13 @@
     editingPost: null, detailPost: null,
     pendingFiles: [],      // {id, name, size, url}
     comments: [],
+    replyingTo: null,
     filters: { type: "", writer: "", gameName: "" }
   };
   var quillInstance = null;
   var selectedImg = null;
   var resizeOverlay = null;
+  var lastResizeAction = null; // { img, prevWidth, prevHeight } — Ctrl+Z로 리사이즈만 되돌리기 위한 기록
   var uidSeq = 0;
   function uid(){ uidSeq++; return "i" + Date.now() + "_" + uidSeq; }
 
@@ -531,10 +551,10 @@
       return r.json();
     }).catch(function(){ return []; });
   }
-  function apiAddComment(postId, content, password){
+  function apiAddComment(postId, content, password, nickname, parentId){
     return fetch("/api/posts/" + postId + "/comments", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: content, password: password })
+      body: JSON.stringify({ content: content, password: password, nickname: nickname, parentId: parentId || null })
     }).then(function(r){ if(!r.ok) throw new Error("save failed"); return r.json(); });
   }
   function apiDeleteComment(commentId, password){
@@ -704,7 +724,7 @@
 
     return (
       '<div class="detail-top-actions">' +
-        '<button class="btn btn-ghost btn-back" type="button" data-action="cancel-form">← 목록으로</button>' +
+        '<button class="btn-back" type="button" data-action="cancel-form">← 목록으로</button>' +
       '</div>' +
       '<div class="panel">' +
         '<div class="form-header">' +
@@ -733,7 +753,7 @@
               '<div class="field"><label>제목</label><input type="text" name="title" placeholder="제목을 입력하세요" value="' + escapeHtml(post.title||"") + '" /></div>' +
               '<div class="pin-checkbox-row">' +
                 '<input type="checkbox" id="pinnedCheckbox" name="pinned" ' + (post.pinned ? 'checked' : '') + ' />' +
-                '<label for="pinnedCheckbox">상단 고정</label>' +
+                '<label for="pinnedCheckbox">공지로 등록</label>' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -802,27 +822,59 @@
 
     var liked = getLikedPostIds().indexOf(String(p.id)) !== -1;
 
+    function renderCommentFormHtml(formId, parentId){
+      return (
+        '<form id="' + formId + '" class="comment-form" data-parent-id="' + (parentId || "") + '">' +
+          '<div class="nickname-wrap">' +
+            '<input type="text" class="nickname-input" name="nickname" value="GM" maxlength="12" />' +
+            '<button type="button" class="nickname-clear" data-action="clear-nickname" title="지우기">✕</button>' +
+          '</div>' +
+          '<input type="text" name="content" placeholder="댓글을 입력하세요" />' +
+          '<input class="pw-input c-pw" type="password" name="password" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="••••" />' +
+          '<button type="submit" class="btn btn-gold">등록</button>' +
+        '</form>'
+      );
+    }
+
+    function renderCommentItemHtml(c, topId){
+      return (
+        '<div class="comment-item" data-action="toggle-reply" data-top-id="' + topId + '">' +
+          '<span class="c-author">' + escapeHtml(c.nickname || "GM") + '</span>' +
+          '<div class="c-content">' + escapeHtml(c.content) + '</div>' +
+          '<div class="c-meta">' +
+            '<span class="c-time">' + fmtDateTime(c.createdAt) + '</span>' +
+            '<button type="button" class="c-del" data-action="del-comment" data-id="' + c.id + '" title="댓글 삭제">✕</button>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+
+    var allComments = state.comments || [];
+    var topLevelComments = allComments.filter(function(c){ return !c.parentId; });
+    var repliesByParent = {};
+    allComments.forEach(function(c){
+      if(c.parentId){
+        if(!repliesByParent[c.parentId]) repliesByParent[c.parentId] = [];
+        repliesByParent[c.parentId].push(c);
+      }
+    });
+
     var commentsHtml = "";
-    if(!state.comments || state.comments.length === 0){
+    if(topLevelComments.length === 0){
       commentsHtml = '<div class="comment-empty">아직 댓글이 없습니다. 첫 댓글을 남겨보세요.</div>';
     } else {
-      commentsHtml = state.comments.map(function(c, idx){
-        return (
-          '<div class="comment-item">' +
-            '<span class="c-author">GM ' + (idx + 1) + '</span>' +
-            '<div class="c-content">' + escapeHtml(c.content) + '</div>' +
-            '<div class="c-meta">' +
-              '<span class="c-time">' + fmtDateTime(c.createdAt) + '</span>' +
-              '<button type="button" class="c-del" data-action="del-comment" data-id="' + c.id + '" title="댓글 삭제">✕</button>' +
-            '</div>' +
-          '</div>'
-        );
+      commentsHtml = topLevelComments.map(function(top){
+        var replies = repliesByParent[top.id] || [];
+        var repliesHtml = replies.map(function(r){ return renderCommentItemHtml(r, top.id); }).join("");
+        var replyFormHtml = (state.replyingTo === top.id) ? renderCommentFormHtml("replyForm", top.id) : "";
+        var innerHtml = repliesHtml + replyFormHtml;
+        return renderCommentItemHtml(top, top.id) + (innerHtml ? '<div class="comment-replies">' + innerHtml + '</div>' : "");
       }).join("");
     }
 
     return (
       '<div class="detail-top-actions">' +
-        '<button class="btn btn-ghost btn-back" data-action="cancel-form">← 목록으로</button>' +
+        '<button class="btn-back" data-action="cancel-form">← 목록으로</button>' +
       '</div>' +
       '<div class="panel">' +
         '<div class="form-header">' +
@@ -851,13 +903,9 @@
         '</div>' +
 
         '<div class="comments-section">' +
-          '<div class="comments-title">댓글 ' + (state.comments ? state.comments.length : 0) + '</div>' +
+          '<div class="comments-title">댓글 ' + allComments.length + '</div>' +
           '<div class="comments-list" id="commentsList">' + commentsHtml + '</div>' +
-          '<form id="commentForm" class="comment-form">' +
-            '<input type="text" name="content" placeholder="댓글을 입력하세요 (익명으로 등록됩니다)" />' +
-            '<input class="pw-input c-pw" type="password" name="password" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="••••" />' +
-            '<button type="submit" class="btn btn-gold">등록</button>' +
-          '</form>' +
+          renderCommentFormHtml("commentForm", null) +
         '</div>' +
       '</div>'
     );
@@ -1181,6 +1229,8 @@
     var startRect = img.getBoundingClientRect();
     var startW = startRect.width, startH = startRect.height;
     var aspect = startW / (startH || 1);
+    var prevWidth = img.style.width;   // 되돌리기용 — 이번 리사이즈를 시작하기 전 크기
+    var prevHeight = img.style.height;
 
     function onMove(ev){
       var dx = ev.clientX - startX, dy = ev.clientY - startY;
@@ -1199,6 +1249,9 @@
     function onUp(){
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseup", onUp);
+      // Quill의 실행취소 기록은 건드리지 않고, 우리가 직접 "리사이즈 직전 크기"를
+      // 기억해뒀다가 바로 다음에 Ctrl+Z가 눌리면 그것만 복원한다.
+      lastResizeAction = { img: img, prevWidth: prevWidth, prevHeight: prevHeight };
     }
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseup", onUp);
@@ -1444,24 +1497,28 @@
       el.addEventListener("click", function(){ saveDraft(); });
     });
 
-    var commentForm = document.getElementById("commentForm");
-    if(commentForm){
-      commentForm.addEventListener("submit", function(e){
+    function wireCommentForm(form){
+      if(!form) return;
+      form.addEventListener("submit", function(e){
         e.preventDefault();
-        var fd = new FormData(commentForm);
+        var fd = new FormData(form);
         var content = (fd.get("content")||"").toString().trim();
         var password = (fd.get("password")||"").toString().trim();
+        var nickname = (fd.get("nickname")||"").toString().trim() || "GM";
+        var parentIdRaw = form.getAttribute("data-parent-id");
+        var parentId = parentIdRaw ? parseInt(parentIdRaw, 10) : null;
         if(!content){ showToast("댓글 내용을 입력해주세요."); return; }
         if(!/^[0-9]{4}$/.test(password)){ showToast("비밀번호는 숫자 4자리로 입력해주세요."); return; }
         if(!state.detailPost) return;
-        var submitBtn = commentForm.querySelector("button[type=submit]");
+        var submitBtn = form.querySelector("button[type=submit]");
         if(submitBtn) submitBtn.disabled = true;
-        apiAddComment(state.detailPost.id, content, password).then(function(){
+        apiAddComment(state.detailPost.id, content, password, nickname, parentId).then(function(){
           return apiGetComments(state.detailPost.id);
         }).then(function(comments){
           state.comments = comments;
           state.detailPost.commentCount = comments.length;
           syncPostInList(state.detailPost.id, { commentCount: comments.length });
+          state.replyingTo = null;
           render();
         }).catch(function(){
           if(submitBtn) submitBtn.disabled = false;
@@ -1469,9 +1526,27 @@
         });
       });
     }
+    wireCommentForm(document.getElementById("commentForm"));
+    wireCommentForm(document.getElementById("replyForm"));
+
+    app.querySelectorAll("[data-action='clear-nickname']").forEach(function(el){
+      el.addEventListener("click", function(){
+        var input = el.previousElementSibling;
+        if(input){ input.value = ""; input.focus(); }
+      });
+    });
+
+    app.querySelectorAll("[data-action='toggle-reply']").forEach(function(el){
+      el.addEventListener("click", function(){
+        var topId = parseInt(el.getAttribute("data-top-id"), 10);
+        state.replyingTo = (state.replyingTo === topId) ? null : topId;
+        render();
+      });
+    });
 
     app.querySelectorAll("[data-action='del-comment']").forEach(function(el){
-      el.addEventListener("click", function(){
+      el.addEventListener("click", function(e){
+        e.stopPropagation();
         var commentId = el.getAttribute("data-id");
         openPasswordModal({
           title: "댓글 비밀번호 확인",
@@ -1588,6 +1663,7 @@
 
       quillInstance.on("text-change", function(delta, oldDelta, source){
         if(source !== "user") return;
+        lastResizeAction = null; // 리사이즈 이후 실제 편집이 있었다면, 오래된 리사이즈 기록은 무효화
         var sel = quillInstance.getSelection();
         if(!sel) return;
         var textBeforeCursor = quillInstance.getText(0, sel.index);
@@ -1606,6 +1682,16 @@
 
       var qroot = quillInstance.root;
       var pendingDropIndex = null;
+      var draggedInternalImg = null;
+
+      qroot.addEventListener("dragstart", function(e){
+        // 에디터 안에 이미 들어있는 이미지를 끌어서 옮기는 경우를 표시해둔다 —
+        // 이걸 구분하지 않으면 "이동"이 아니라 "복사"가 되어버린다.
+        draggedInternalImg = (e.target && e.target.tagName === "IMG") ? e.target : null;
+      });
+      qroot.addEventListener("dragend", function(){
+        draggedInternalImg = null;
+      });
 
       qroot.addEventListener("dragover", function(e){
         e.preventDefault();
@@ -1622,6 +1708,37 @@
         e.preventDefault();
         dropGuide.style.display = "none";
         var idx = typeof pendingDropIndex === "number" ? pendingDropIndex : quillInstance.getLength();
+
+        if(draggedInternalImg){
+          // 새로 첨부하는 게 아니라 기존 이미지를 다른 자리로 옮기는 것 —
+          // 원래 위치에서 지우고 같은 크기 그대로 새 위치에 다시 넣는다.
+          var movedImg = draggedInternalImg;
+          draggedInternalImg = null;
+          var srcAttr = movedImg.getAttribute("src");
+          var widthStyle = movedImg.style.width;
+          var heightStyle = movedImg.style.height;
+          var blot = (window.Quill && Quill.find) ? Quill.find(movedImg, true) : null;
+          if(blot){
+            var oldIndex = quillInstance.getIndex(blot);
+            var targetIndex = idx;
+            quillInstance.deleteText(oldIndex, 1, "user");
+            if(targetIndex > oldIndex) targetIndex -= 1;
+            quillInstance.insertEmbed(targetIndex, "image", srcAttr, "user");
+            quillInstance.setSelection(targetIndex + 1);
+            var movedImgs = quillInstance.root.querySelectorAll("img");
+            for(var mi = 0; mi < movedImgs.length; mi++){
+              if(movedImgs[mi].getAttribute("src") === srcAttr && !movedImgs[mi].style.width){
+                movedImgs[mi].style.width = widthStyle;
+                movedImgs[mi].style.height = heightStyle;
+                break;
+              }
+            }
+            clearImageSelection();
+          }
+          pendingDropIndex = null;
+          return;
+        }
+
         var scrollX = window.scrollX, scrollY = window.scrollY;
         var files = (e.dataTransfer && e.dataTransfer.files) ?
           Array.prototype.slice.call(e.dataTransfer.files).filter(function(f){ return f.type.indexOf("image/") === 0; }) : [];
@@ -1681,6 +1798,20 @@
     if(!cw) return;
     if(!cw.contains(e.target)) clearImageSelection();
   });
+
+  document.addEventListener("keydown", function(e){
+    var isUndo = (e.ctrlKey || e.metaKey) && !e.shiftKey && (e.key === "z" || e.key === "Z");
+    if(!isUndo) return;
+    if(lastResizeAction && lastResizeAction.img && document.body.contains(lastResizeAction.img)){
+      // Quill 자체의 실행취소는 손대지 않고, 방금 리사이즈한 크기만 직접 되돌린다.
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      lastResizeAction.img.style.width = lastResizeAction.prevWidth;
+      lastResizeAction.img.style.height = lastResizeAction.prevHeight;
+      if(selectedImg === lastResizeAction.img) repositionResizeOverlay();
+      lastResizeAction = null;
+    }
+  }, true);
 
   document.addEventListener("keydown", function(e){
     if(!selectedImg) return;
