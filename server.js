@@ -54,6 +54,8 @@ function ensureColumn(table, column, ddl) {
 ensureColumn("posts", "pinned", "pinned INTEGER DEFAULT 0");
 ensureColumn("posts", "views", "views INTEGER DEFAULT 0");
 ensureColumn("posts", "likes", "likes INTEGER DEFAULT 0");
+ensureColumn("comments", "nickname", "nickname TEXT DEFAULT 'GM'");
+ensureColumn("comments", "parent_id", "parent_id INTEGER");
 
 if (isFirstRun) {
   console.log("[gm-board] 새 데이터베이스 파일을 생성했습니다: " + DB_PATH);
@@ -203,6 +205,8 @@ function rowToComment(row) {
     id: row.id,
     postId: row.post_id,
     content: row.content,
+    nickname: row.nickname || "GM",
+    parentId: row.parent_id || null,
     createdAt: row.created_at
   };
 }
@@ -217,13 +221,19 @@ app.post("/api/posts/:id/comments", function (req, res) {
   if (!post) return res.status(404).json({ error: "not found" });
   const b = req.body || {};
   const content = (b.content || "").toString().trim();
+  const nickname = ((b.nickname || "").toString().trim()) || "GM";
+  let parentId = null;
+  if (b.parentId) {
+    const parent = db.prepare("SELECT id FROM comments WHERE id = ? AND post_id = ?").get(b.parentId, req.params.id);
+    if (parent) parentId = parent.id;
+  }
   if (!content || !/^[0-9]{4}$/.test(b.password || "")) {
     return res.status(400).json({ error: "invalid payload" });
   }
   const now = new Date().toISOString();
   const info = db.prepare(
-    `INSERT INTO comments (post_id, content, password, created_at) VALUES (?,?,?,?)`
-  ).run(req.params.id, content, b.password, now);
+    `INSERT INTO comments (post_id, content, password, nickname, parent_id, created_at) VALUES (?,?,?,?,?,?)`
+  ).run(req.params.id, content, b.password, nickname, parentId, now);
   const row = db.prepare("SELECT * FROM comments WHERE id = ?").get(info.lastInsertRowid);
   res.json(rowToComment(row));
 });
