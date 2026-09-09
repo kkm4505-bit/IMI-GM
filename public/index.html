@@ -307,15 +307,18 @@
   .btn-back:active{ transform: translateY(0); }
 
   .btn-action{
-    display:inline-flex; align-items:center; gap:6px; border:none; border-radius:9px;
-    padding:8px 14px; font-size:12.5px; font-weight:700; cursor:pointer; font-family:inherit;
-    transition: transform .1s ease, box-shadow .15s ease, filter .15s ease;
+    display:inline-flex; align-items:center; gap:6px; border:1px solid transparent; border-radius:9px;
+    padding:7px 13px; font-size:12.5px; font-weight:600; cursor:pointer; font-family:inherit;
+    background: var(--panel);
+    transition: border-color .15s ease, background .15s ease;
   }
-  .btn-action:hover{ transform: translateY(-1px); filter:brightness(1.07); }
-  .btn-action:active{ transform: translateY(0); }
-  .btn-pdf{ background: linear-gradient(150deg, #74add8 0%, #3f7ce0 100%); color:#fff; box-shadow: 0 5px 14px rgba(63,124,224,0.35); }
-  .btn-edit{ background: linear-gradient(150deg, #f3c876 0%, #dda746 100%); color:#241703; box-shadow: 0 5px 14px rgba(216,161,66,0.32); }
-  .btn-del{ background: linear-gradient(150deg, #f0937f 0%, #d9503a 100%); color:#2b0c05; box-shadow: 0 5px 14px rgba(217,80,58,0.32); }
+  .btn-action:hover{ background: var(--panel-2); }
+  .btn-pdf{ color: #8fb8ea; border-color: rgba(63,124,224,0.28); }
+  .btn-pdf:hover{ background: rgba(63,124,224,0.1); }
+  .btn-edit{ color: var(--gold); border-color: rgba(232,182,84,0.28); }
+  .btn-edit:hover{ background: rgba(232,182,84,0.08); }
+  .btn-del{ color: #e5897a; border-color: rgba(224,101,79,0.28); }
+  .btn-del:hover{ background: rgba(224,101,79,0.08); }
 
   /* ---- 추천(좋아요) ---- */
   .like-wrap{ display:flex; justify-content:center; margin: 34px 0 6px; }
