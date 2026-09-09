@@ -6,108 +6,148 @@
 <title>GM 인사이트 게시판</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css" />
 <style>
+  @font-face{
+    font-family: 'SUIT Variable';
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('/fonts/SUIT-Variable.woff2') format('woff2');
+  }
   :root{
-    --bg: #10131a;
-    --bg-soft: #151924;
-    --panel: #1a1f2c;
-    --panel-2: #1f2534;
-    --border: #2a3142;
-    --border-soft: #232939;
-    --text: #e7e9ee;
-    --text-dim: #9aa1b3;
-    --text-faint: #6c7385;
+    color-scheme: dark;
+    --bg: #0b0c10;
+    --bg-soft: #131419;
+    --panel: #1a1c24;
+    --panel-2: #21232d;
+    --border: #2c2f3b;
+    --border-soft: #23252f;
+    --text: #eceef1;
+    --text-dim: #93969f;
+    --text-faint: #63656e;
     --gold: #e8b654;
+    --gold-rgb: 232,182,84;
+    --gold-solid: #e8b654;
     --gold-dim: #a8823f;
     --gold-bg: rgba(232,182,84,0.12);
     --danger: #e0654f;
+    --danger-rgb: 224,101,79;
+    --danger-bg: rgba(224,101,79,0.12);
+    --info: #6fa8ea;
+    --info-rgb: 63,124,224;
     --ok: #6fbf8b;
-    --radius: 14px;
-    --radius-sm: 10px;
-    --shadow: 0 10px 30px rgba(0,0,0,0.35);
-    --shadow-soft: 0 1px 0 rgba(255,255,255,0.03) inset, 0 22px 44px -26px rgba(0,0,0,0.55);
+    --ok-rgb: 111,191,139;
+    --radius: 18px;
+    --radius-sm: 12px;
+    --shadow: 0 12px 28px rgba(0,0,0,0.28);
+    --shadow-soft: 0 1px 0 rgba(255,255,255,0.02) inset, 0 1px 2px rgba(0,0,0,0.2);
     font-size: 16px;
+  }
+  :root[data-theme="light"]{
+    color-scheme: light;
+    --bg: #f6f7fc;
+    --bg-soft: #eef1f9;
+    --panel: #ffffff;
+    --panel-2: #f9faff;
+    --border: #e1e4f0;
+    --border-soft: #ecedf6;
+    --text: #14161f;
+    --text-dim: #585c6e;
+    --text-faint: #8d90a3;
+    --gold: #c2780a;
+    --gold-rgb: 194,120,10;
+    --gold-solid: #f5a524;
+    --gold-dim: #e0a233;
+    --gold-bg: rgba(194,120,10,0.12);
+    --danger: #dc3a2c;
+    --danger-rgb: 220,58,44;
+    --danger-bg: rgba(220,58,44,0.10);
+    --info: #2054c9;
+    --info-rgb: 37,99,235;
+    --ok: #16a34a;
+    --ok-rgb: 22,163,74;
+    --shadow: 0 12px 28px rgba(30,35,70,0.07);
+    --shadow-soft: 0 1px 0 rgba(255,255,255,0.7) inset, 0 1px 2px rgba(30,35,70,0.05);
   }
   *{ box-sizing:border-box; }
   html,body{ height:100%; }
   body{
     margin:0;
-    background:
-      radial-gradient(1200px 600px at 15% -10%, rgba(232,182,84,0.06), transparent 60%),
-      radial-gradient(900px 500px at 100% 0%, rgba(90,120,220,0.05), transparent 55%),
-      var(--bg);
+    background: var(--bg);
     color: var(--text);
-    font-family: 'Pretendard Variable', Pretendard, SUIT, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Segoe UI", sans-serif;
+    font-family: 'SUIT Variable', 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Segoe UI", sans-serif;
     letter-spacing: -0.01em;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     min-height:100%;
+    transition: background .2s ease, color .2s ease;
   }
-  .wrap{ max-width: 980px; margin: 0 auto; padding: 28px 20px 80px; }
+  .wrap{ max-width: 1000px; margin: 0 auto; padding: 32px 20px 80px; }
 
   .topbar{
-    display:flex; align-items:flex-end; justify-content:space-between; gap:16px;
-    padding-bottom:18px; border-bottom: 1px solid var(--border); margin-bottom:22px;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    margin-bottom:24px; flex-wrap:wrap;
   }
-  .brand{ display:flex; flex-direction:column; gap:6px; }
-  .brand .kicker{ font-size:12px; font-weight:700; letter-spacing:0.04em; color: var(--gold); display:flex; align-items:center; gap:8px; }
-  .brand .kicker .dot{ width:6px;height:6px;border-radius:50%; background: var(--gold); box-shadow: 0 0 0 3px var(--gold-bg); }
-  .brand h1{ margin:0; font-size: 27px; font-weight: 800; letter-spacing: -0.02em; }
-  .count-pill{ font-size:12.5px; font-weight:600; color: var(--text-dim); background: var(--panel); border:1px solid var(--border); padding: 5px 12px; border-radius: 999px; white-space:nowrap; }
-  .count-pill b{ color:var(--gold); font-weight:800; }
+  .brand{ display:flex; flex-direction:column; gap:3px; }
+  .brand .kicker{ font-size:11.5px; font-weight:600; letter-spacing:0.03em; color: var(--text-faint); }
+  .brand h1{ margin:0; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+  .count-pill{ font-size:13px; color: var(--text-faint); white-space:nowrap; }
+  .count-pill b{ color:var(--text); font-weight:700; }
 
   .btn{
-    appearance:none; border:1px solid var(--border); background: var(--panel); color: var(--text);
-    font-size: 14px; font-weight:600; padding: 9px 16px; border-radius: var(--radius-sm); cursor:pointer; font-family:inherit;
+    appearance:none; border:1px solid var(--border); background: var(--panel); color: var(--text-dim);
+    font-size: 13.5px; font-weight:600; padding: 8px 14px; border-radius: var(--radius-sm); cursor:pointer; font-family:inherit;
     letter-spacing:-0.01em;
-    transition: border-color .15s ease, background .15s ease, transform .1s ease, box-shadow .15s ease;
+    transition: border-color .15s ease, background .15s ease, color .15s ease;
   }
-  .btn:hover{ border-color:#3a4258; background:var(--panel-2); transform: translateY(-1px); }
+  .btn:hover{ border-color: var(--gold-dim); color: var(--text); }
   .btn:active{ transform: translateY(1px); }
-  .btn-gold{ background: linear-gradient(180deg, #f0c169, #dda746); border-color: transparent; color: #201503; font-weight:800; }
-  .btn-gold:hover{ filter:brightness(1.05); }
-  .btn-ghost{ background:transparent; }
-  .btn-danger-ghost{ background:transparent; color: var(--danger); border-color: rgba(224,101,79,0.4); }
-  .btn-danger-ghost:hover{ background: rgba(224,101,79,0.1); border-color: var(--danger); }
-  .btn-danger{ background: var(--danger); border-color: var(--danger); color:#fff; font-weight:800; }
+  .btn-gold{ background: var(--gold-solid); border-color: var(--gold-solid); color: #201503; font-weight:700; }
+  .btn-gold:hover{ filter:brightness(1.06); border-color: var(--gold); color:#201503; }
+  .btn-ghost{ background:transparent; border-color:transparent; }
+  .btn-ghost:hover{ background: var(--panel-2); border-color:transparent; }
+  .btn-danger-ghost{ background:transparent; color: var(--danger); border-color: transparent; }
+  .btn-danger-ghost:hover{ background: var(--danger-bg); border-color:transparent; color: var(--danger); }
+  .btn-danger{ background: var(--danger); border-color: var(--danger); color:#fff; font-weight:700; }
   .btn-danger:hover{ filter:brightness(1.08); }
   .btn-sm{ padding:6px 12px; font-size:12.5px; border-radius:9px; }
   .btn:disabled{ opacity:0.35; cursor:not-allowed; }
 
   .btn-write{
-    display:inline-flex; align-items:center; gap:8px;
-    background: linear-gradient(150deg, #f6d08b 0%, #e0a84a 55%, #c98f38 100%);
-    border: 1px solid rgba(255,224,160,0.5); color: #241703; font-weight:700; font-size:14px;
-    padding: 10px 20px 10px 16px; border-radius: 999px;
-    box-shadow: 0 6px 18px rgba(216,161,66,0.32), 0 0 0 1px rgba(232,182,84,0.15), inset 0 1px 0 rgba(255,255,255,0.4);
-    cursor:pointer; transition: transform .12s ease, box-shadow .15s ease;
+    display:inline-flex; align-items:center; gap:7px;
+    background: var(--gold-solid); border: 1px solid var(--gold-solid); color: #201503; font-weight:700; font-size:13.5px;
+    padding: 9px 16px; border-radius: var(--radius-sm);
+    cursor:pointer; transition: filter .12s ease;
   }
-  .btn-write:hover{ transform: translateY(-1px); box-shadow: 0 10px 24px rgba(216,161,66,0.4), 0 0 0 1px rgba(232,182,84,0.25), inset 0 1px 0 rgba(255,255,255,0.45); }
-  .btn-write:active{ transform: translateY(0px); }
-  .btn-write svg{ width:15px; height:15px; }
+  .btn-write:hover{ filter: brightness(1.06); }
+  .btn-write:active{ transform: translateY(1px); }
+  .btn-write svg{ width:14px; height:14px; }
+  .btn-write:disabled{ opacity:0.4; cursor:not-allowed; }
 
   .list-actions{ display:flex; justify-content:flex-end; align-items:center; gap:10px; margin-bottom:12px; }
 
-  .board{ border:1px solid var(--border); border-radius: var(--radius); overflow:hidden; background: var(--panel); box-shadow: var(--shadow-soft); }
+  .board{ border:1px solid var(--border); border-radius: var(--radius); overflow:hidden; background: var(--panel); box-shadow: var(--shadow); }
   table{ width:100%; border-collapse:collapse; }
   thead th{
     text-align:left; font-size:12px; color: var(--text-faint); font-weight:700; letter-spacing:0.02em; padding: 13px 14px;
     background: var(--bg-soft); border-bottom:1px solid var(--border); white-space:nowrap;
   }
   th.col-no, td.col-no{ width:56px; text-align:center; }
-  th.col-type, td.col-type{ width:120px; }
-  th.col-writer, td.col-writer{ width:96px; }
-  th.col-date, td.col-date{ width:150px; }
+  th.col-type, td.col-type{ width:112px; }
+  th.col-game, td.col-game{ width:110px; }
+  th.col-writer, td.col-writer{ width:88px; }
+  th.col-date, td.col-date{ width:140px; }
+  td.col-game{ color:var(--text-dim); font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   tbody tr{ border-bottom: 1px solid var(--border-soft); transition: background .12s ease; }
   tbody tr:last-child{ border-bottom:none; }
-  tbody tr:hover{ background: rgba(255,255,255,0.02); }
+  tbody tr:nth-child(even):not(.pinned-row){ background: var(--bg-soft); }
+  tbody tr:hover{ background: var(--panel-2); }
   td{ padding: 13px 14px; font-size: 14px; vertical-align:middle; }
   td.col-no{ color:var(--text-faint); font-variant-numeric: tabular-nums; font-weight:600; text-align:center; }
-  td.col-date{ color:var(--text-dim); font-variant-numeric: tabular-nums; font-size:13px; }
+  td.col-date{ color:var(--text-dim); font-variant-numeric: tabular-nums; font-size:13px; white-space:nowrap; }
   td.col-writer{ color:var(--text-dim); font-weight:600; }
 
   .tag{
     display:inline-block; font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:999px;
-    background: var(--gold-bg); color: var(--gold); border:1px solid rgba(232,182,84,0.25); white-space:nowrap;
+    background: var(--gold-bg); color: var(--gold); border:1px solid rgba(var(--gold-rgb),0.25); white-space:nowrap;
     letter-spacing:-0.01em;
   }
   .title-cell{ max-width: 360px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:pointer; position:relative; display:inline-block; }
@@ -128,19 +168,23 @@
     border-radius:9px; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center;
     transition: border-color .15s ease, background .15s ease, color .15s ease;
   }
-  .page-btn:hover{ border-color:#3a4258; }
-  .page-btn.active{ background: var(--gold-bg); border-color: rgba(232,182,84,0.4); color: var(--gold); font-weight:800; }
+  .page-btn:hover{ border-color: var(--gold-dim); }
+  .page-btn.active{ background: var(--gold-bg); border-color: rgba(var(--gold-rgb),0.4); color: var(--gold); font-weight:800; }
   .page-btn:disabled{ opacity:0.3; cursor:not-allowed; }
 
   .panel{ background: var(--panel); border:1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-soft); }
-  .form-header{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:30px; flex-wrap:wrap; }
+  .form-header{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; flex-wrap:wrap; }
   .form-header h2{ margin:0; font-size:19px; font-weight:800; letter-spacing:-0.01em; }
-  .detail-meta-top{
-    display:flex; flex-wrap:wrap; align-items:center; gap: 8px 16px;
-    font-size:13px; color:var(--text-dim); flex:1;
+  .detail-meta-row{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    padding-bottom:16px; margin-bottom:20px; border-bottom:1px solid var(--border-soft);
   }
-  .detail-meta-top span b{ color:var(--text); font-weight:700; }
-  .detail-actions{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+  .detail-meta-top{
+    display:flex; flex-wrap:wrap; align-items:center; gap: 6px 14px;
+    font-size:12.5px; color:var(--text-faint);
+  }
+  .detail-meta-top span b{ color:var(--text-dim); font-weight:700; }
+  .detail-actions{ display:flex; gap:2px; flex-wrap:wrap; justify-content:flex-end; }
 
   .field-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; margin-bottom: 16px; }
   .content-divider{ border:none; border-top:1px solid var(--border-soft); margin: 4px 0 20px; }
@@ -150,7 +194,8 @@
   .field.full{ grid-column: 1 / -1; }
   .field label{ font-size:12.5px; color:var(--text-dim); font-weight:700; letter-spacing:-0.005em; }
   .field .hint{ font-size:11.5px; color:var(--text-faint); margin-top:2px; }
-  input[type=text], input[type=password], select, textarea{
+  input.pw-input{ letter-spacing: 6px; font-size:16px; text-align:left; }
+  input[type=text], input[type=password], input[type=date], select, textarea{
     width:100%; background: var(--bg-soft); border:1px solid var(--border); color: var(--text);
     padding: 10px 12px; border-radius:8px; font-size:14px; font-family:inherit; outline:none;
     transition:border-color .15s ease;
@@ -158,7 +203,9 @@
   input:focus, select:focus, textarea:focus{ border-color: var(--gold-dim); }
   input[readonly]{ color:var(--text-dim); background: var(--bg); cursor:default; }
   select{ cursor:pointer; }
-  input.pw-input{ letter-spacing: 6px; font-size:16px; text-align:left; }
+  /* 네이티브 드롭다운 팝업은 select 자체의(칩 안에서는 흐리게 조정한) color를 그대로 물려받아
+     읽기 어려울 수 있어서, 옵션 목록 글자색·배경은 항상 또렷하게 별도로 지정한다. */
+  select option{ color: var(--text); background: var(--panel); }
 
   .section-label{ font-size:12.5px; color:var(--text-dim); font-weight:700; margin-bottom:8px; letter-spacing:-0.005em; }
 
@@ -182,7 +229,6 @@
   .ql-toolbar.ql-snow .ql-picker-label:hover, .ql-toolbar.ql-snow .ql-picker-label.ql-active{ color: var(--gold); }
   .ql-snow .ql-picker-options{ background: var(--panel-2); border:1px solid var(--border); }
   .ql-toolbar.ql-snow .ql-formats{ margin-right:10px; }
-  /* 색상/배경색 선택 버튼을 팔레트 스와치처럼 보이도록 강조 */
   .ql-toolbar.ql-snow .ql-color .ql-picker-label,
   .ql-toolbar.ql-snow .ql-background .ql-picker-label{
     border:1px solid var(--border); border-radius:6px; padding:1px 4px;
@@ -201,7 +247,7 @@
 
   .drop-guide{
     position:absolute; left:0; right:0; height:3px; background:var(--gold); display:none; pointer-events:none;
-    border-radius:2px; box-shadow:0 0 8px rgba(232,182,84,.7); z-index:5; margin:0 10px;
+    border-radius:2px; box-shadow:0 0 8px rgba(var(--gold-rgb),.7); z-index:5; margin:0 10px;
   }
 
   .img-resize-overlay{ position:absolute; border:1.5px dashed var(--gold); pointer-events:none; z-index:6; }
@@ -222,6 +268,7 @@
   .img-drop:hover, .img-drop.drag{ border-color: var(--gold-dim); background: var(--gold-bg); color: var(--text-dim); }
   .img-drop .icon{ font-size:22px; margin-bottom:6px; }
   .img-drop .sub{ font-size:12px; margin-top:4px; }
+  .attach-hint{ font-size:11.5px; color:var(--text-faint); margin-top:8px; }
 
   .file-list{ display:flex; flex-direction:column; gap:8px; margin-top:14px; }
   .file-chip{
@@ -235,7 +282,7 @@
 
   .form-footer{ display:flex; justify-content:flex-end; gap:8px; margin-top: 20px; padding-top:16px; border-top:1px solid var(--border-soft); }
 
-  .detail-title{ font-size:26px; font-weight:800; letter-spacing:-0.02em; margin: 14px 0 28px; }
+  .detail-title{ font-size:24px; font-weight:800; letter-spacing:-0.02em; margin: 0 0 12px; line-height:1.35; }
   .detail-content{ line-height:1.75; font-size:14.5px; color: var(--text); padding: 0 0 6px; overflow-wrap:anywhere; }
   .detail-images{ display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; }
   .detail-images img{ max-width:220px; max-height:220px; border-radius:8px; border:1px solid var(--border); cursor:zoom-in; }
@@ -253,7 +300,7 @@
   .modal-box .err{ color: var(--danger); font-size:12px; min-height:16px; margin-top:6px; }
   .modal-actions{ display:flex; gap:8px; margin-top:14px; }
   .modal-actions .btn{ flex:1; }
-  .modal-icon{ width:38px; height:38px; border-radius:50%; background: rgba(111,191,139,0.15); color: var(--ok); display:flex; align-items:center; justify-content:center; font-size:18px; margin-bottom:10px; }
+  .modal-icon{ width:38px; height:38px; border-radius:50%; background: rgba(var(--ok-rgb),0.15); color: var(--ok); display:flex; align-items:center; justify-content:center; font-size:18px; margin-bottom:10px; }
 
   .lightbox{ position:fixed; inset:0; background:rgba(6,7,11,0.85); display:flex; align-items:center; justify-content:center; z-index:200; padding:30px; cursor:zoom-out; }
   .lightbox img{ max-width:100%; max-height:100%; border-radius:6px; }
@@ -265,26 +312,47 @@
   }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(-4px); }
 
-  /* ---- 목록 필터 바 ---- */
-  .list-toolbar{ display:flex; justify-content:space-between; align-items:flex-end; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
-  .filter-bar{ display:flex; flex-wrap:wrap; gap:10px; }
-  .filter-group{ display:flex; flex-direction:column; gap:4px; width:150px; }
-  .filter-group .filter-label{ font-size:11px; font-weight:700; color:var(--text-faint); letter-spacing:-0.005em; padding-left:2px; }
-  .filter-bar select{
-    width:100%; padding:8px 30px 8px 14px; font-size:13px; font-weight:600;
-    background: var(--panel); border:1px solid var(--border); border-radius:999px; color:var(--text-dim);
-    cursor:pointer; appearance:none; -webkit-appearance:none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239aa1b3'/%3E%3C/svg%3E");
-    background-repeat:no-repeat; background-position: right 12px center;
-    text-overflow:ellipsis; white-space:nowrap; overflow:hidden;
+  /* ---- 목록 필터 바 (벤토 카드형 툴바) ---- */
+  .toolbar-card{ background: var(--panel); border:1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom:18px; box-shadow: var(--shadow); }
+  .toolbar-top{ display:flex; gap:10px; align-items:center; }
+  .search-wrap{ flex:1; position:relative; min-width:160px; }
+  .search-wrap svg{ position:absolute; left:12px; top:50%; transform:translateY(-50%); width:14px; height:14px; color: var(--text-faint); pointer-events:none; }
+  .search-wrap input{
+    width:100%; padding:9px 14px 9px 34px; font-size:13.5px; font-weight:500;
+    background: var(--bg-soft); border:1px solid transparent; border-radius: var(--radius-sm); color:var(--text);
   }
-  .filter-bar select:focus{ border-color: var(--gold-dim); }
+  .search-wrap input:focus{ border-color: var(--gold-dim); background: var(--panel); }
+  .chip-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  .filter-chip{
+    display:flex; align-items:center; gap:6px; background: var(--bg-soft); border-radius:999px;
+    padding:6px 10px 6px 13px; transition: background .15s ease;
+  }
+  .filter-chip:hover{ background: var(--border-soft); }
+  .filter-chip.active{ background: var(--gold-bg); }
+  .filter-chip.active .chip-label{ color: var(--gold); }
+  .filter-chip.active select, .filter-chip.active input[type=date]{ color: var(--gold); }
+  .filter-chip .chip-label{ font-size:11.5px; color:var(--text-faint); font-weight:600; white-space:nowrap; }
+  .filter-reset{
+    display:inline-flex; align-items:center; gap:4px; background:transparent; border:none; cursor:pointer;
+    font-family:inherit; font-size:11.5px; font-weight:700; color:var(--text-faint); padding:6px 8px;
+  }
+  .filter-reset:hover{ color: var(--danger); }
+  .filter-chip select, .filter-chip input[type=date]{
+    border:none; background:transparent; padding:0 16px 0 0; font-size:12.5px; font-weight:600; color:var(--text-dim);
+    appearance:none; -webkit-appearance:none; cursor:pointer; max-width:120px;
+  }
+  .filter-chip select{
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6'%3E%3Cpath d='M0 0l4.5 6 4.5-6z' fill='%2393969f'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position: right 2px center;
+  }
+  .filter-chip select:focus, .filter-chip input:focus{ outline:none; color: var(--text); }
+  .filter-chip input[type=date]{ max-width:110px; padding-right:0; }
 
   .writer-inline{ display:inline-flex; align-items:center; white-space:nowrap; }
 
   /* ---- 상단 고정 강조 ---- */
-  tbody tr.pinned-row td{ background: rgba(232,182,84,0.055); }
-  tbody tr.pinned-row:hover td{ background: rgba(232,182,84,0.09); }
+  tbody tr.pinned-row td{ background: rgba(var(--gold-rgb),0.055); }
+  tbody tr.pinned-row:hover td{ background: rgba(var(--gold-rgb),0.09); }
   tbody tr.pinned-row td:first-child{ border-left: 3px solid var(--danger); }
   tbody tr td:first-child{ border-left: 3px solid transparent; }
   .pin-mark{ margin-right:4px; }
@@ -297,7 +365,7 @@
   /* ---- 게시글 보기 상단 버튼 ---- */
   .detail-top-actions{ margin-bottom:14px; }
   .btn-back{
-    display:inline-flex; align-items:center; gap:6px; border:1.5px solid rgba(232,182,84,0.4); border-radius:999px;
+    display:inline-flex; align-items:center; gap:6px; border:1.5px solid rgba(var(--gold-rgb),0.4); border-radius:999px;
     padding:8.5px 18px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit;
     background: var(--panel); color: var(--gold);
     box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset;
@@ -307,30 +375,30 @@
   .btn-back:active{ transform: translateY(0); }
 
   .btn-action{
-    display:inline-flex; align-items:center; gap:6px; border:1px solid transparent; border-radius:9px;
-    padding:7px 13px; font-size:12.5px; font-weight:600; cursor:pointer; font-family:inherit;
-    background: var(--panel);
-    transition: border-color .15s ease, background .15s ease;
+    display:inline-flex; align-items:center; gap:5px; border:1px solid transparent; border-radius:8px;
+    padding:5px 9px; font-size:12.5px; font-weight:700; cursor:pointer; font-family:inherit;
+    background: transparent;
+    transition: background .15s ease;
   }
-  .btn-action:hover{ background: var(--panel-2); }
-  .btn-pdf{ color: #8fb8ea; border-color: rgba(63,124,224,0.28); }
-  .btn-pdf:hover{ background: rgba(63,124,224,0.1); }
-  .btn-edit{ color: var(--gold); border-color: rgba(232,182,84,0.28); }
-  .btn-edit:hover{ background: rgba(232,182,84,0.08); }
-  .btn-del{ color: #e5897a; border-color: rgba(224,101,79,0.28); }
-  .btn-del:hover{ background: rgba(224,101,79,0.08); }
+  .btn-pdf{ color: var(--info); }
+  .btn-pdf:hover{ background: rgba(var(--info-rgb),0.1); }
+  .btn-edit{ color: var(--gold); }
+  .btn-edit:hover{ background: rgba(var(--gold-rgb),0.1); }
+  .btn-del{ color: var(--danger); }
+  .btn-del:hover{ background: rgba(var(--danger-rgb),0.1); }
 
   /* ---- 추천(좋아요) ---- */
-  .like-wrap{ display:flex; justify-content:center; margin: 34px 0 6px; }
+  .like-wrap{ display:flex; flex-direction:column; align-items:center; gap:6px; margin: 26px 0 4px; }
   .like-btn{
-    display:inline-flex; align-items:center; gap:12px; padding:16px 34px; border-radius:999px;
-    border:1px solid var(--border); background: var(--panel); color:var(--text-dim); font-size:20px; font-weight:800;
+    display:inline-flex; align-items:center; gap:8px; padding:9px 20px; border-radius:999px;
+    border:1px solid var(--border); background: var(--panel); color:var(--text-dim); font-size:14.5px; font-weight:700;
     cursor:pointer; transition: all .15s ease; font-family:inherit;
   }
-  .like-btn:hover:not(:disabled){ border-color: var(--gold-dim); color:var(--text); transform: translateY(-1px); }
-  .like-btn.liked{ background: var(--gold-bg); border-color: rgba(232,182,84,0.45); color: var(--gold); }
+  .like-btn:hover:not(:disabled){ border-color: var(--gold-dim); color:var(--text); }
+  .like-btn.liked{ background: var(--gold-bg); border-color: rgba(var(--gold-rgb),0.45); color: var(--gold); }
   .like-btn:disabled{ cursor:default; }
-  .like-btn .cnt{ font-variant-numeric: tabular-nums; font-size:22px; }
+  .like-btn .cnt{ font-variant-numeric: tabular-nums; font-size:15px; }
+  .like-hint{ font-size:11.5px; color:var(--text-faint); }
 
   /* ---- 댓글 ---- */
   .comments-section{ margin-top:30px; padding-top:22px; border-top:1px solid var(--border-soft); }
@@ -368,15 +436,37 @@
   .pin-checkbox-row input[type=checkbox]{ width:16px; height:16px; accent-color: var(--gold); cursor:pointer; }
   .pin-checkbox-row label{ font-size:12.5px; color:var(--text-dim); cursor:pointer; user-select:none; font-weight:600; }
 
+  /* ---- 상단 사용자 영역 ---- */
+  .user-area{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+  .theme-switch{
+    display:inline-flex; align-items:center; background: var(--bg-soft); border:1px solid var(--border);
+    border-radius:999px; padding:3px; gap:2px;
+  }
+  .theme-switch button{
+    display:inline-flex; align-items:center; gap:5px; border:none; background:transparent; cursor:pointer;
+    font-family:inherit; font-size:12.5px; font-weight:700; color: var(--text-faint);
+    padding:6px 12px; border-radius:999px; transition: background .15s ease, color .15s ease;
+  }
+  .theme-switch button:hover{ color: var(--text-dim); }
+  .theme-switch button.active{ background: var(--panel); color: var(--text); box-shadow: var(--shadow-soft); }
+  .theme-switch button .ico{ font-size:13px; }
+
   @media (max-width: 720px){ .field-grid{ grid-template-columns: 1fr; } }
   @media (max-width: 640px){
     .wrap{ padding:20px 14px 60px; }
     .brand h1{ font-size:21px; }
+    .toolbar-top{ flex-wrap:wrap; }
+    .search-wrap{ width:100%; flex-basis:100%; }
+    .btn-write{ width:100%; justify-content:center; }
+    .filter-chip{ flex:1 1 auto; flex-wrap:wrap; row-gap:4px; }
+    .filter-chip select, .filter-chip input[type=date]{ max-width:none; }
+    .filter-chip input[type=date]{ width:auto; flex:1 1 auto; }
     thead{ display:none; }
     table, tbody, tr, td{ display:block; width:100%; }
     tbody tr{ padding: 12px 14px 14px; border-bottom: 1px solid var(--border); }
     td{ padding: 3px 0; border:none; }
     td.col-no{ display:none; }
+    td.col-game{ color:var(--text-faint); font-size:12px; margin-top:3px; }
     .title-cell{ max-width:100%; white-space:normal; font-size:15px; font-weight:600; margin:4px 0 2px; display:block; }
     td.col-writer, td.col-date{ display:inline-block; color:var(--text-faint); font-size:12.5px; }
     td.col-writer::after{ content:"·"; margin: 0 6px; color:var(--text-faint); }
@@ -405,8 +495,8 @@
   "use strict";
 
   var REPORT_TYPES = ["공지","사이트 개선","게임 인사이트","마케팅 전략","경쟁사 분석","커뮤니티 여론","기타 제언"];
-  var WRITERS = ["김경민","임대진","정민석","서해나","서예빈","윤보름","김광호","이해성","맹준용","박성욱","백취섭","김명우"];
-  var TYPE_COLORS = {
+  var WRITERS = ["김경민","임대진","정민석","서해나","서예빈","윤보름","김광호","이해성","맹준용","박성욱","백휘섭","김명우"];
+  var TYPE_COLORS_DARK = {
     "공지":          { bg: "#d64545",                 fg: "#ffffff",  border: "#d64545" },
     "사이트 개선":   { bg: "rgba(94,163,224,0.14)",  fg: "#8fc3ee", border: "rgba(94,163,224,0.32)" },
     "게임 인사이트": { bg: "rgba(232,182,84,0.14)",  fg: "#e8b654", border: "rgba(232,182,84,0.32)" },
@@ -415,11 +505,24 @@
     "커뮤니티 여론": { bg: "rgba(110,206,178,0.14)", fg: "#8fdcc2", border: "rgba(110,206,178,0.32)" },
     "기타 제언":     { bg: "rgba(154,161,179,0.16)", fg: "#c3c8d4", border: "rgba(154,161,179,0.32)" }
   };
+  // 라이트 배경에서는 위 파스텔 톤이 흐릿하게 보여서, 채도·명도를 올린 별도 팔레트를 쓴다.
+  var TYPE_COLORS_LIGHT = {
+    "공지":          { bg: "#e0392a",                 fg: "#ffffff",  border: "#e0392a" },
+    "사이트 개선":   { bg: "rgba(37,99,235,0.12)",   fg: "#2054c9", border: "rgba(37,99,235,0.38)" },
+    "게임 인사이트": { bg: "rgba(194,120,10,0.14)",  fg: "#a3610a", border: "rgba(194,120,10,0.38)" },
+    "마케팅 전략":   { bg: "rgba(124,58,237,0.13)",  fg: "#6d28d9", border: "rgba(124,58,237,0.38)" },
+    "경쟁사 분석":   { bg: "rgba(225,29,72,0.11)",   fg: "#c11d47", border: "rgba(225,29,72,0.35)" },
+    "커뮤니티 여론": { bg: "rgba(5,150,105,0.13)",   fg: "#04835a", border: "rgba(5,150,105,0.36)" },
+    "기타 제언":     { bg: "rgba(71,85,105,0.14)",   fg: "#3f4a5e", border: "rgba(71,85,105,0.35)" }
+  };
   function typeTagHtml(type){
-    var c = TYPE_COLORS[type] || TYPE_COLORS["기타 제언"];
+    var palette = state.theme === "light" ? TYPE_COLORS_LIGHT : TYPE_COLORS_DARK;
+    var c = palette[type] || palette["기타 제언"];
     return '<span class="tag" style="background:' + c.bg + ';color:' + c.fg + ';border-color:' + c.border + ';">' + escapeHtml(type) + '</span>';
   }
   var PAGE_SIZE = 10;
+  var THEME_KEY = "gm_board_theme";
+  var DRAFT_KEY = "gm_board_draft";
 
   var LIKED_POSTS_KEY = "gm_board_liked_posts";
   function getLikedPostIds(){
@@ -431,15 +534,13 @@
     try{ localStorage.setItem(LIKED_POSTS_KEY, JSON.stringify(liked)); }catch(e){}
   }
 
-  var DRAFT_KEY = "gm_board_draft";
-
   var state = {
     view: "list", page: 1, posts: [], loading: true,
     editingPost: null, detailPost: null,
     pendingFiles: [],      // {id, name, size, url}
     comments: [],
     replyingTo: null,
-    filters: { type: "", writer: "", gameName: "" }
+    filters: { type: "", writer: "", gameName: "", keyword: "", sort: "latest", dateFrom: "", dateTo: "" }
   };
   var quillInstance = null;
   var selectedImg = null;
@@ -463,6 +564,20 @@
     var pad = function(n){ return String(n).padStart(2,"0"); };
     return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
   }
+  function fmtRelative(iso){
+    var d = new Date(iso);
+    if(isNaN(d.getTime())) return "-";
+    var diffSec = Math.floor((Date.now() - d.getTime()) / 1000);
+    if(diffSec < 0) diffSec = 0;
+    if(diffSec < 60) return "방금 전";
+    var diffMin = Math.floor(diffSec / 60);
+    if(diffMin < 60) return diffMin + "분 전";
+    var diffHour = Math.floor(diffMin / 60);
+    if(diffHour < 24) return diffHour + "시간 전";
+    var diffDay = Math.floor(diffHour / 24);
+    if(diffDay < 7) return diffDay + "일 전";
+    return fmtDate(iso);
+  }
   function fmtDate(iso){
     var d = new Date(iso);
     if(isNaN(d.getTime())) return "-";
@@ -485,11 +600,26 @@
     setTimeout(function(){ el.classList.remove("show"); setTimeout(function(){ el.remove(); }, 200); }, 1800);
   }
 
-  /* ---------------- API 연동 ----------------
-     실제 서버(Node/Express + SQLite)와 통신한다. 모든 GM이 같은 서버에 접속하므로
-     게시글 데이터가 공유되고, 서버 코드를 다시 배포해도 데이터베이스 파일은
-     그대로 유지된다(단, 배포 환경에 반드시 영구 저장 공간을 연결해야 함 — README 참고).
-  ------------------------------------------------- */
+  /* ---------------- 테마 ---------------- */
+
+  function applyTheme(){
+    var theme = state.theme || "dark";
+    if(theme === "light") document.documentElement.setAttribute("data-theme","light");
+    else document.documentElement.removeAttribute("data-theme");
+  }
+  try{ state.theme = localStorage.getItem(THEME_KEY) || "dark"; }catch(e){ state.theme = "dark"; }
+  applyTheme();
+
+  function setTheme(theme){
+    if(theme !== "light" && theme !== "dark") return;
+    if(state.theme === theme) return;
+    state.theme = theme;
+    applyTheme();
+    try{ localStorage.setItem(THEME_KEY, state.theme); }catch(e){}
+    render();
+  }
+
+  /* ---------------- API 연동 ---------------- */
 
   function loadAllPosts(){
     return fetch("/api/posts").then(function(r){
@@ -516,21 +646,21 @@
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
-    }).then(function(r){ if(!r.ok) throw new Error("save failed"); return r.json(); });
+    }).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(data){ if(!r.ok) throw new Error(data.error || "save failed"); return data; }); });
   }
   function apiUpdatePost(id, payload){
     return fetch("/api/posts/" + id, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
-    }).then(function(r){ if(!r.ok) throw new Error("save failed"); return r.json(); });
+    }).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(data){ if(!r.ok) throw new Error(data.error || "save failed"); return data; }); });
   }
   function apiDeletePost(id, password){
     return fetch("/api/posts/" + id, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password: password })
-    }).then(function(r){ if(!r.ok) throw new Error("delete failed"); return r.json(); });
+    }).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(data){ if(!r.ok) throw new Error(data.error || "delete failed"); return data; }); });
   }
   function apiUploadFile(file){
     var fd = new FormData();
@@ -559,7 +689,7 @@
     return fetch("/api/posts/" + postId + "/comments", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content: content, password: password, nickname: nickname, parentId: parentId || null })
-    }).then(function(r){ if(!r.ok) throw new Error("save failed"); return r.json(); });
+    }).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(data){ if(!r.ok) throw new Error(data.error || "save failed"); return data; }); });
   }
   function apiDeleteComment(commentId, password){
     return fetch("/api/comments/" + commentId, {
@@ -576,11 +706,6 @@
       // 저장된 값이 아니라 매번 다시 계산한다 (등록 순으로 오름차순 매긴 뒤 최신순으로 뒤집음).
       posts.sort(function(a,b){ return a.id - b.id; });
       posts.forEach(function(p, idx){ p.displayNo = idx + 1; });
-      // 화면에 보여줄 때는 상단 고정 글을 맨 앞에, 그 안에서는 최신순으로 표시한다.
-      posts.sort(function(a,b){
-        if(!!a.pinned !== !!b.pinned) return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0);
-        return b.id - a.id;
-      });
       state.posts = posts;
       state.loading = false;
       render();
@@ -609,18 +734,48 @@
     return Object.keys(set).sort(function(a,b){ return a.localeCompare(b, "ko"); });
   }
 
+  function isAnyFilterActive(){
+    var f = state.filters;
+    return !!(f.type || f.writer || f.gameName || f.keyword.trim() || f.dateFrom || f.dateTo || f.sort !== "latest");
+  }
+
   function applyFilters(posts){
     var f = state.filters;
+    var kw = (f.keyword || "").trim().toLowerCase();
+    var from = f.dateFrom ? new Date(f.dateFrom + "T00:00:00") : null;
+    var to = f.dateTo ? new Date(f.dateTo + "T23:59:59") : null;
     return posts.filter(function(p){
       if(f.type && p.type !== f.type) return false;
       if(f.writer && p.writer !== f.writer) return false;
       if(f.gameName && p.gameName !== f.gameName) return false;
+      if(kw){
+        var hay = ((p.title||"") + " " + (p.content||"") + " " + (p.gameName||"") + " " + (p.writer||"")).toLowerCase();
+        if(hay.indexOf(kw) === -1) return false;
+      }
+      if(from || to){
+        var created = new Date(p.createdAt);
+        if(from && created < from) return false;
+        if(to && created > to) return false;
+      }
       return true;
     });
   }
 
+  function sortPosts(posts){
+    var sort = state.filters.sort;
+    var pinned = posts.filter(function(p){ return p.pinned; });
+    var rest = posts.filter(function(p){ return !p.pinned; });
+    function byLatest(a,b){ return b.id - a.id; }
+    function byViews(a,b){ return (b.views||0) - (a.views||0) || byLatest(a,b); }
+    function byLikes(a,b){ return (b.likes||0) - (a.likes||0) || byLatest(a,b); }
+    var cmp = sort === "views" ? byViews : (sort === "likes" ? byLikes : byLatest);
+    pinned.sort(byLatest);
+    rest.sort(cmp);
+    return pinned.concat(rest);
+  }
+
   function renderList(){
-    var filtered = applyFilters(state.posts);
+    var filtered = sortPosts(applyFilters(state.posts));
     var total = filtered.length;
     var totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
     if(state.page > totalPages) state.page = totalPages;
@@ -629,25 +784,26 @@
 
     var rowsHtml = "";
     if(state.loading){
-      rowsHtml = '<tr><td colspan="7"><div class="empty">불러오는 중…</div></td></tr>';
+      rowsHtml = '<tr><td colspan="8"><div class="empty">불러오는 중…</div></td></tr>';
     } else if(total === 0){
       var emptyMsg = state.posts.length === 0
         ? '<b>등록된 게시글이 없습니다</b>오른쪽 위 \'게시글 등록\' 버튼으로 첫 인사이트를 등록해 보세요.'
         : '<b>조건에 맞는 게시글이 없습니다</b>필터를 바꿔서 다시 확인해보세요.';
-      rowsHtml = '<tr><td colspan="7"><div class="empty">' + emptyMsg + '</div></td></tr>';
+      rowsHtml = '<tr><td colspan="8"><div class="empty">' + emptyMsg + '</div></td></tr>';
     } else {
       rowsHtml = pagePosts.map(function(p){
         return (
           '<tr class="' + (p.pinned ? 'pinned-row' : '') + '">' +
             '<td class="col-no">' + p.displayNo + '</td>' +
             '<td class="col-type">' + typeTagHtml(p.type) + '</td>' +
+            '<td class="col-game">' + escapeHtml(p.gameName || "-") + '</td>' +
             '<td><span class="title-cell" data-action="view" data-id="' + p.id + '">' +
               (p.pinned ? '<span class="pin-mark">📌</span>' : '') +
               '<span class="title-text">' + escapeHtml(p.title) + '</span>' +
               (p.commentCount ? '<span class="comment-count">(' + p.commentCount + ')</span>' : '') +
             '</span></td>' +
             '<td class="col-writer">' + escapeHtml(p.writer) + '</td>' +
-            '<td class="col-date">' + fmtDateTime(p.createdAt) + '</td>' +
+            '<td class="col-date" title="' + escapeHtml(fmtDateTime(p.createdAt)) + '">' + fmtRelative(p.createdAt) + '</td>' +
             '<td class="col-views">' + (p.views || 0) + '</td>' +
             '<td class="col-likes">' + (p.likes || 0) + '</td>' +
           '</tr>'
@@ -676,24 +832,43 @@
     return (
       '<div class="topbar">' +
         '<div class="brand">' +
-          '<div class="kicker"><span class="dot"></span>ITEMMANIA · GAME STRATEGY</div>' +
+          '<div class="kicker">ITEMMANIA · GAME STRATEGY</div>' +
           '<h1>GM 인사이트 게시판</h1>' +
         '</div>' +
-        '<div class="count-pill">전체 <b>' + state.posts.length + '</b>건</div>' +
-      '</div>' +
-      '<div class="list-toolbar">' +
-        '<div class="filter-bar">' +
-          '<div class="filter-group"><span class="filter-label">보고종류</span><select data-filter="type">' + filterOpt(REPORT_TYPES, state.filters.type) + '</select></div>' +
-          '<div class="filter-group"><span class="filter-label">게시자</span><select data-filter="writer">' + filterOpt(WRITERS, state.filters.writer) + '</select></div>' +
-          '<div class="filter-group"><span class="filter-label">게임명</span><select data-filter="gameName">' + filterOpt(gameNames, state.filters.gameName) + '</select></div>' +
+        '<div class="user-area">' +
+          '<div class="theme-switch">' +
+            '<button type="button" class="' + (state.theme !== "light" ? "active" : "") + '" data-action="set-theme" data-theme="dark"><span class="ico">🌙</span>다크</button>' +
+            '<button type="button" class="' + (state.theme === "light" ? "active" : "") + '" data-action="set-theme" data-theme="light"><span class="ico">☀️</span>라이트</button>' +
+          '</div>' +
         '</div>' +
-        '<button class="btn-write" data-action="new">' +
-          '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5V19M5 12H19" stroke="#241703" stroke-width="2.4" stroke-linecap="round"/></svg>' +
-          '게시글 등록' +
-        '</button>' +
       '</div>' +
+      '<div class="toolbar-card">' +
+        '<div class="toolbar-top">' +
+          '<div class="search-wrap">' +
+            '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' +
+            '<input type="text" data-filter="keyword" placeholder="제목·내용·게임명·게시자 검색" value="' + escapeHtml(state.filters.keyword) + '" />' +
+          '</div>' +
+          '<button class="btn-write" data-action="new">' +
+            '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 5V19M5 12H19" stroke="#201503" stroke-width="2.4" stroke-linecap="round"/></svg>' +
+            '게시글 등록' +
+          '</button>' +
+        '</div>' +
+        '<div class="chip-row">' +
+          '<div class="filter-chip' + (state.filters.type ? ' active' : '') + '"><span class="chip-label">종류</span><select data-filter="type">' + filterOpt(REPORT_TYPES, state.filters.type) + '</select></div>' +
+          '<div class="filter-chip' + (state.filters.writer ? ' active' : '') + '"><span class="chip-label">게시자</span><select data-filter="writer">' + filterOpt(WRITERS, state.filters.writer) + '</select></div>' +
+          '<div class="filter-chip' + (state.filters.gameName ? ' active' : '') + '"><span class="chip-label">게임명</span><select data-filter="gameName">' + filterOpt(gameNames, state.filters.gameName) + '</select></div>' +
+          '<div class="filter-chip' + (state.filters.sort !== "latest" ? ' active' : '') + '"><span class="chip-label">정렬</span><select data-filter="sort">' +
+            '<option value="latest" ' + (state.filters.sort==="latest"?"selected":"") + '>최신순</option>' +
+            '<option value="views" ' + (state.filters.sort==="views"?"selected":"") + '>조회수순</option>' +
+            '<option value="likes" ' + (state.filters.sort==="likes"?"selected":"") + '>추천수순</option>' +
+          '</select></div>' +
+          '<div class="filter-chip' + ((state.filters.dateFrom || state.filters.dateTo) ? ' active' : '') + '"><span class="chip-label">등록일</span><input type="date" data-filter="dateFrom" value="' + escapeHtml(state.filters.dateFrom) + '" /><span class="chip-label">~</span><input type="date" data-filter="dateTo" value="' + escapeHtml(state.filters.dateTo) + '" /></div>' +
+          (isAnyFilterActive() ? '<button type="button" class="filter-reset" data-action="reset-filters">✕ 필터 초기화</button>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="count-pill" style="margin-bottom:10px;">검색 결과 <b>' + total + '</b>건 · 전체 <b>' + state.posts.length + '</b>건</div>' +
       '<div class="board"><table>' +
-        '<thead><tr><th class="col-no">No</th><th class="col-type">종류</th><th>제목</th><th class="col-writer">게시자</th><th class="col-date">일시</th><th class="col-views">조회수</th><th class="col-likes">추천수</th></tr></thead>' +
+        '<thead><tr><th class="col-no">No</th><th class="col-type">종류</th><th class="col-game">게임명</th><th>제목</th><th class="col-writer">게시자</th><th class="col-date">일시</th><th class="col-views">조회수</th><th class="col-likes">추천수</th></tr></thead>' +
         '<tbody>' + rowsHtml + '</tbody>' +
       '</table></div>' +
       pagerHtml
@@ -798,6 +973,7 @@
               '<div>클릭하거나 파일을 이 영역에 끌어다 놓으세요</div>' +
               '<div class="sub">문서, 엑셀, 로그 파일 등을 첨부할 수 있습니다</div>' +
             '</div>' +
+            '<div class="attach-hint">확장자 제한 없음 · 파일 1개당 최대 25MB</div>' +
             '<input type="file" id="fileInput" multiple style="display:none" />' +
             '<div class="file-list" id="filesWrap">' + filesHtml + '</div>' +
           '</div>' +
@@ -881,21 +1057,22 @@
         '<button class="btn-back" data-action="cancel-form">← 목록으로</button>' +
       '</div>' +
       '<div class="panel">' +
-        '<div class="form-header">' +
+        '<div style="margin-bottom:10px;">' + typeTagHtml(p.type) + '</div>' +
+        '<div class="detail-title" id="pdfTitle">' + escapeHtml(p.title) + '</div>' +
+        '<div class="detail-meta-row">' +
           '<div class="detail-meta-top">' +
-            typeTagHtml(p.type) +
             '<span>게시자 <b>' + escapeHtml(p.writer) + '</b></span>' +
             '<span>게임명 <b>' + escapeHtml(p.gameName||"-") + '</b></span>' +
             '<span>등록 <b>' + fmtDate(p.createdAt) + '</b></span>' +
+            (p.updatedAt ? '<span>최종 수정 <b>' + fmtDateTime(p.updatedAt) + '</b></span>' : '') +
             '<span>조회 <b>' + (p.views || 0) + '</b></span>' +
           '</div>' +
           '<div class="detail-actions">' +
-            '<button class="btn-action btn-pdf" data-action="pdf" data-id="' + p.id + '">🗂 PDF 다운로드</button>' +
+            '<button class="btn-action btn-pdf" data-action="pdf" data-id="' + p.id + '">🗂 PDF</button>' +
             '<button class="btn-action btn-edit" data-action="edit" data-id="' + p.id + '">✏️ 수정</button>' +
             '<button class="btn-action btn-del" data-action="delete" data-id="' + p.id + '">🗑 삭제</button>' +
           '</div>' +
         '</div>' +
-        '<div class="detail-title" id="pdfTitle">' + escapeHtml(p.title) + '</div>' +
         '<div class="detail-content" id="pdfContent">' + (p.content || "") + '</div>' +
         (imgsHtml ? '<div class="detail-images">' + imgsHtml + '</div>' : '') +
         (filesHtml ? '<div class="detail-files">' + filesHtml + '</div>' : '') +
@@ -1109,7 +1286,6 @@
         return { index: index, guideTop: r.top };
       }
     }
-    // 커서가 모든 블록보다 아래쪽(마지막 줄 아래)에 있는 경우 -> 문서 맨 끝에 삽입
     var lastEl = blocks[blocks.length - 1];
     var lastRect = lastEl.getBoundingClientRect();
     var lastBlot = Quill.find(lastEl, true);
@@ -1119,9 +1295,15 @@
 
   /* ---------------- attachment handling ---------------- */
 
+  var MAX_FILE_SIZE = 25 * 1024 * 1024;
+
   function addGenericFiles(fileList){
     var files = Array.prototype.slice.call(fileList);
     files.forEach(function(file){
+      if(file.size > MAX_FILE_SIZE){
+        showToast("'" + file.name + "'은(는) 25MB를 초과해 첨부할 수 없습니다.");
+        return;
+      }
       var tempId = uid();
       var placeholder = { id: tempId, name: file.name, size: file.size, url: null, uploading: true };
       state.pendingFiles.push(placeholder);
@@ -1163,8 +1345,6 @@
   function insertImageIntoQuill(quill, index, src){
     quill.insertEmbed(index, "image", src, "user");
     quill.setSelection(index + 1);
-    // Quill의 index/leaf 매핑이 어긋나는 경우에도 항상 정확히 규격화되도록,
-    // 인덱스가 아니라 방금 삽입한 이미지 주소와 일치하는 <img>를 직접 찾아 크기를 지정한다.
     var imgs = quill.root.querySelectorAll("img");
     for(var i = 0; i < imgs.length; i++){
       if(imgs[i].getAttribute("src") === src && !imgs[i].style.width){
@@ -1188,7 +1368,6 @@
       var index = quillInstance.getIndex(blot);
       quillInstance.deleteText(index, 1, "user");
     } else if(selectedImg.parentNode){
-      // 혹시 Quill이 해당 노드를 못 찾는 경우를 대비한 대체 경로
       selectedImg.parentNode.removeChild(selectedImg);
     }
     clearImageSelection();
@@ -1233,7 +1412,7 @@
     var startRect = img.getBoundingClientRect();
     var startW = startRect.width, startH = startRect.height;
     var aspect = startW / (startH || 1);
-    var prevWidth = img.style.width;   // 되돌리기용 — 이번 리사이즈를 시작하기 전 크기
+    var prevWidth = img.style.width;
     var prevHeight = img.style.height;
 
     function onMove(ev){
@@ -1253,15 +1432,11 @@
     function onUp(){
       document.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseup", onUp);
-      // Quill의 실행취소 기록은 건드리지 않고, 우리가 직접 "리사이즈 직전 크기"를
-      // 기억해뒀다가 바로 다음에 Ctrl+Z가 눌리면 그것만 복원한다.
       lastResizeAction = { img: img, prevWidth: prevWidth, prevHeight: prevHeight };
     }
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseup", onUp);
   }
-
-  /* ---------------- form submit ---------------- */
 
   /* ---------------- 임시저장 ---------------- */
 
@@ -1322,6 +1497,7 @@
 
     if(!type){ showToast("보고종류를 선택해주세요."); return; }
     if(!writer){ showToast("게시자를 선택해주세요."); return; }
+    if(!gameName){ showToast("게임명을 입력해주세요."); return; }
     if(!title){ showToast("제목을 입력해주세요."); return; }
     if(!/^[0-9]{4}$/.test(password)){ showToast("비밀번호는 숫자 4자리로 입력해주세요."); return; }
     if(!contentText && contentHtml.indexOf("<img") === -1){ showToast("내용을 입력해주세요."); return; }
@@ -1351,15 +1527,19 @@
         title: isEdit ? "수정 완료" : "등록 완료",
         message: isEdit ? "게시글이 수정되었습니다." : "게시글이 등록되었습니다."
       });
-    }).catch(function(){
+    }).catch(function(err){
       if(submitBtn) submitBtn.disabled = false;
-      showToast("저장 중 오류가 발생했습니다. 다시 시도해주세요.");
+      showToast((err && err.message) || "저장 중 오류가 발생했습니다. 다시 시도해주세요.");
     });
   }
 
   /* ---------------- event binding ---------------- */
 
   function bindEvents(){
+    app.querySelectorAll("[data-action='set-theme']").forEach(function(el){
+      el.addEventListener("click", function(){ setTheme(el.getAttribute("data-theme")); });
+    });
+
     app.querySelectorAll("[data-action='new']").forEach(function(el){
       el.addEventListener("click", function(){
         state.view = "write"; state.editingPost = null; state.pendingFiles = [];
@@ -1379,10 +1559,59 @@
       });
     });
 
+    var filterDebounceTimers = {};
     app.querySelectorAll("[data-filter]").forEach(function(el){
-      el.addEventListener("change", function(){
-        var key = el.getAttribute("data-filter");
+      var key = el.getAttribute("data-filter");
+      var isTextInput = el.tagName === "INPUT" && el.type === "text";
+      var evt = (el.tagName === "SELECT") ? "change" : "input";
+
+      // render()는 매번 innerHTML을 통째로 새로 그려서, 그 순간 타이핑 중이던 입력창 DOM 자체가
+      // 사라졌다 다시 생긴다. 검색창처럼 한 글자씩 계속 입력되는 필드에서 매 키 입력마다 이 짓을 하면
+      // 커서 위치가 튀거나 한글 조합이 끊기는 등 예측 못한 부작용이 계속 생기므로, 아예 타이핑이
+      // 잠깐 멈췄을 때(디바운스)만 반영한다. 값 자체는 브라우저 기본 동작에 맡겨 DOM을 건드리지 않는다.
+      function commit(){
         state.filters[key] = el.value;
+        state.page = 1;
+        var selStart = isTextInput ? el.selectionStart : null;
+        var selEnd = isTextInput ? el.selectionEnd : null;
+        render();
+        var newEl = app.querySelector('[data-filter="' + key + '"]');
+        if(newEl){
+          newEl.focus();
+          if(isTextInput && typeof selStart === "number"){
+            try{ newEl.setSelectionRange(selStart, selEnd); }catch(e){}
+          }
+        }
+      }
+
+      el.addEventListener(evt, function(e){
+        if(e && e.isComposing) return; // 한글 등 IME 조합 중에는 아무 것도 하지 않는다.
+        if(isTextInput){
+          clearTimeout(filterDebounceTimers[key]);
+          filterDebounceTimers[key] = setTimeout(commit, 200);
+        } else {
+          commit();
+        }
+      });
+
+      if(isTextInput){
+        // 조합이 시작되는 순간, 조합 도중에 타이머가 발동해 화면을 다시 그리는 일이 없도록 취소해둔다.
+        el.addEventListener("compositionstart", function(){
+          clearTimeout(filterDebounceTimers[key]);
+        });
+        // 브라우저에 따라 조합이 끝난 마지막 input 이벤트에서도 isComposing이 true로 잡혀
+        // 위 리스너가 계속 무시해버리는 경우가 있어(그러면 검색어가 영영 반영 안 됨),
+        // 조합 종료 시점에 한 번 더 확실하게 예약해준다.
+        el.addEventListener("compositionend", function(){
+          clearTimeout(filterDebounceTimers[key]);
+          filterDebounceTimers[key] = setTimeout(commit, 200);
+        });
+      }
+    });
+
+    app.querySelectorAll("[data-action='reset-filters']").forEach(function(el){
+      el.addEventListener("click", function(){
+        state.filters = { type: "", writer: "", gameName: "", keyword: "", sort: "latest", dateFrom: "", dateTo: "" };
         state.page = 1;
         render();
       });
@@ -1427,8 +1656,6 @@
               if(res && res.ok){
                 close();
                 apiGetPost(id).then(function(post){
-                  // 서버는 수정 시 비밀번호 자체를 바꾸지 않으므로, 방금 확인에 사용한 값을
-                  // 그대로 채워두면(마스터 비밀번호였더라도) 제출 시 안전하게 통과된다.
                   post.password = val;
                   state.editingPost = post;
                   state.pendingFiles = (post.files||[]).map(function(f){ return { id: uid(), name: f.name, size: f.size, url: f.url }; });
@@ -1524,9 +1751,9 @@
           syncPostInList(state.detailPost.id, { commentCount: comments.length });
           state.replyingTo = null;
           render();
-        }).catch(function(){
+        }).catch(function(err){
           if(submitBtn) submitBtn.disabled = false;
-          showToast("댓글 등록 중 오류가 발생했습니다.");
+          showToast((err && err.message) || "댓글 등록 중 오류가 발생했습니다.");
         });
       });
     }
@@ -1650,8 +1877,6 @@
         placeholder: "게임 플레이 중 확인한 거래 동향, 인사이트, 제언 내용을 작성해주세요."
       });
 
-      // Quill이 select 기반 피커(색상/배경색/정렬)를 커스텀 UI로 바꿔치기하기 때문에
-      // 원래 select에 붙인 title 속성이 사라진다 -> 새로 생성된 라벨에 다시 붙여준다.
       [
         [".ql-color .ql-picker-label", "글자 색"],
         [".ql-background .ql-picker-label", "배경 색"],
@@ -1667,7 +1892,7 @@
 
       quillInstance.on("text-change", function(delta, oldDelta, source){
         if(source !== "user") return;
-        lastResizeAction = null; // 리사이즈 이후 실제 편집이 있었다면, 오래된 리사이즈 기록은 무효화
+        lastResizeAction = null;
         var sel = quillInstance.getSelection();
         if(!sel) return;
         var textBeforeCursor = quillInstance.getText(0, sel.index);
@@ -1689,8 +1914,6 @@
       var draggedInternalImg = null;
 
       qroot.addEventListener("dragstart", function(e){
-        // 에디터 안에 이미 들어있는 이미지를 끌어서 옮기는 경우를 표시해둔다 —
-        // 이걸 구분하지 않으면 "이동"이 아니라 "복사"가 되어버린다.
         draggedInternalImg = (e.target && e.target.tagName === "IMG") ? e.target : null;
       });
       qroot.addEventListener("dragend", function(){
@@ -1714,8 +1937,6 @@
         var idx = typeof pendingDropIndex === "number" ? pendingDropIndex : quillInstance.getLength();
 
         if(draggedInternalImg){
-          // 새로 첨부하는 게 아니라 기존 이미지를 다른 자리로 옮기는 것 —
-          // 원래 위치에서 지우고 같은 크기 그대로 새 위치에 다시 넣는다.
           var movedImg = draggedInternalImg;
           draggedInternalImg = null;
           var srcAttr = movedImg.getAttribute("src");
@@ -1757,17 +1978,13 @@
         pendingDropIndex = null;
       });
 
-      // 클립보드에서 이미지를 복사해 붙여넣을 때도, Quill 기본 동작(내용에 base64로
-      // 그대로 박아넣기)이 아니라 툴바 버튼/드래그와 동일하게 서버에 업로드하고
-      // 그 주소를 삽입하도록 가로챈다. Quill 자체도 paste 리스너를 갖고 있어서
-      // 캡처 단계에서 먼저 가로채고 stopImmediatePropagation으로 중복 삽입을 막는다.
       qroot.addEventListener("paste", function(e){
         var items = (e.clipboardData && e.clipboardData.items) || [];
         var imageItem = null;
         for(var i = 0; i < items.length; i++){
           if(items[i].type && items[i].type.indexOf("image/") === 0){ imageItem = items[i]; break; }
         }
-        if(!imageItem) return; // 일반 텍스트 붙여넣기는 Quill 기본 동작에 맡긴다
+        if(!imageItem) return;
         e.preventDefault();
         e.stopImmediatePropagation();
         var file = imageItem.getAsFile();
@@ -1807,7 +2024,6 @@
     var isUndo = (e.ctrlKey || e.metaKey) && !e.shiftKey && (e.key === "z" || e.key === "Z");
     if(!isUndo) return;
     if(lastResizeAction && lastResizeAction.img && document.body.contains(lastResizeAction.img)){
-      // Quill 자체의 실행취소는 손대지 않고, 방금 리사이즈한 크기만 직접 되돌린다.
       e.preventDefault();
       e.stopImmediatePropagation();
       lastResizeAction.img.style.width = lastResizeAction.prevWidth;
@@ -1819,8 +2035,6 @@
 
   document.addEventListener("keydown", function(e){
     if(!selectedImg) return;
-    // 이미지가 선택된 상태에서만 동작 — 다른 입력창에서 Delete/Backspace를 누르는 것과
-    // 겹치지 않도록, 이미지가 클릭으로 선택되어 있을 때만 삭제를 수행한다.
     if(e.key === "Delete" || e.key === "Backspace"){
       e.preventDefault();
       deleteSelectedImage();
